@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "ReferralHub | Get referred, not just applied",
   description:
     "Skip the ATS black hole. Get your resume directly into the hands of hiring managers through verified employees at top tech companies.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+  },
 };
 
 import { Providers } from "@/components/Providers";
