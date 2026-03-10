@@ -59,17 +59,69 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, trigger, session }) {
+        async signIn({ user, account }) {
+            const isOAuth =
+                account?.provider === "google" || account?.provider === "linkedin";
+
+            if (!isOAuth) {
+                return true;
+            }
+
+            const email = user.email?.toLowerCase().trim();
+            if (!email) {
+                return false;
+            }
+
+            await dbConnect();
+
+            const existingUser = await User.findOne({ email });
+            if (!existingUser) {
+                await User.create({
+                    name: user.name || email.split("@")[0],
+                    email,
+                    image: user.image,
+                    role: "seeker",
+                    isVerified: false,
+                });
+            } else if (!existingUser.image && user.image) {
+                existingUser.image = user.image;
+                await existingUser.save();
+            }
+
+            return true;
+        },
+        async jwt({ token, user, account }) {
             if (user) {
                 token.id = user.id;
-                token.role = (user as any).role as UserRole;
+                const userRole = (user as unknown as { role?: UserRole }).role;
+                if (userRole) {
+                    token.role = userRole;
+                }
             }
+
+            if (
+                account?.provider === "google" ||
+                account?.provider === "linkedin" ||
+                (!token.id && token.email)
+            ) {
+                const email = token.email?.toLowerCase().trim();
+                if (email) {
+                    await dbConnect();
+                    const dbUser = await User.findOne({ email }).select("_id role");
+                    if (dbUser) {
+                        token.id = dbUser._id.toString();
+                        token.role = dbUser.role as UserRole;
+                    }
+                }
+            }
+
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
-                (session.user as any).role = token.role as UserRole;
+                (session.user as unknown as { role?: UserRole }).role =
+                    (token.role as UserRole | undefined) || "seeker";
             }
             return session;
         },
