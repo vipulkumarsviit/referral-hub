@@ -81,7 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email,
                     image: user.image,
                     role: "seeker",
-                    isVerified: false,
+                    isVerified: true,
                 });
             } else {
                 // OAuth is only allowed for job seekers.
@@ -89,8 +89,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     return false;
                 }
 
+                let shouldSave = false;
                 if (!existingUser.image && user.image) {
                     existingUser.image = user.image;
+                    shouldSave = true;
+                }
+                if (!existingUser.isVerified) {
+                    existingUser.isVerified = true;
+                    shouldSave = true;
+                }
+                if (shouldSave) {
                     await existingUser.save();
                 }
             }
