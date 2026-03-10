@@ -16,6 +16,10 @@ const navLinks = [
 export function SiteHeader() {
     const [open, setOpen] = useState(false);
     const { data: session } = useSession();
+    const dashboardHref =
+        (session?.user as { role?: "seeker" | "referrer" | "admin" } | undefined)?.role === "admin"
+            ? "/dashboard/admin"
+            : "/dashboard";
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-brand-dark/5 bg-parchment/80 backdrop-blur-md">
@@ -42,7 +46,7 @@ export function SiteHeader() {
                         </a>
                     ))}
                     {session && (
-                        <Link href="/dashboard" className="text-sm font-semibold text-brand-dark/70 transition-colors hover:text-primary">
+                        <Link href={dashboardHref} className="text-sm font-semibold text-brand-dark/70 transition-colors hover:text-primary">
                             Dashboard
                         </Link>
                     )}
@@ -93,7 +97,7 @@ export function SiteHeader() {
                             ))}
                             {session && (
                                 <Link
-                                    href="/dashboard"
+                                    href={dashboardHref}
                                     onClick={() => setOpen(false)}
                                     className="text-base font-semibold text-brand-dark/70 transition-colors hover:text-primary"
                                 >

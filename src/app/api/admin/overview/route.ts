@@ -11,6 +11,10 @@ export async function GET() {
         if (!session || !session.user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
+        const role = (session.user as { role?: "seeker" | "referrer" | "admin" })?.role;
+        if (role !== "admin") {
+            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+        }
 
         await dbConnect();
 
@@ -54,4 +58,3 @@ export async function GET() {
         return NextResponse.json({ message: "Server error" }, { status: 500 });
     }
 }
-

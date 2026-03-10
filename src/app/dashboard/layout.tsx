@@ -38,18 +38,20 @@ import {
 } from "lucide-react";
 
 type NavRole = "seeker" | "referrer";
+type SidebarRole = NavRole | "admin";
 
 const navItems: {
   icon: typeof Home;
   label: string;
   href: string;
-  roles: NavRole[];
+  roles: SidebarRole[];
 }[] = [
+  { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
   { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
   { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
   { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
   { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer"] },
+  { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer", "admin"] },
 ];
 
 export default function DashboardLayout({
@@ -89,7 +91,7 @@ export default function DashboardLayout({
 
   const displayName = profile?.name || session?.user?.name || "";
   const jobTitle = profile?.jobTitle || "";
-  const role = (session?.user as { role?: NavRole } | undefined)?.role;
+  const role = (session?.user as { role?: SidebarRole } | undefined)?.role;
   const initials = displayName
     ? displayName
         .split(" ")
