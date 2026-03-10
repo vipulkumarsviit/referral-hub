@@ -1,12 +1,9 @@
-import { auth } from "@/auth";
-import { notFound, redirect } from "next/navigation";
-import dbConnect from "@/lib/mongodb";
-import { JobListing } from "@/models/JobListing";
-import { Application } from "@/models/Application";
-import { User } from "@/models/User";
 import Link from "next/link";
 import { ArrowLeft, Users, CheckCircle, XCircle } from "lucide-react";
 import ApplicantActions from "./ApplicantActions";
+import { auth } from "@/auth";
+import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function ReferrerJobViewPage(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -20,23 +17,32 @@ export default async function ReferrerJobViewPage(props: { params: Promise<{ id:
         redirect("/dashboard");
     }
 
-    await dbConnect();
-    const job = await JobListing.findById(params.id).lean();
+    const baseUrl =
+        process.env.NEXTAUTH_URL ??
+        process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+        throw new Error("Base URL is not configured (set NEXTAUTH_URL or NEXT_PUBLIC_APP_URL)");
+    }
 
-    if (!job || job.referrerId.toString() !== session.user.id) {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const res = await fetch(`${baseUrl}/api/dashboard/listings/${params.id}`, {
+        cache: "no-store",
+        headers: {
+            Cookie: cookieHeader,
+        },
+    });
+
+    if (res.status === 404) {
         return notFound();
     }
 
-    const applications = await Application.find({ jobId: job._id }).sort({ createdAt: -1 }).lean();
+    if (!res.ok) {
+        throw new Error("Failed to load listing details");
+    }
 
-    // Fetch applicant users
-    const seekerIds = applications.map(a => a.jobSeekerId);
-    const seekers = await User.find({ _id: { $in: seekerIds } }).lean();
-
-    const seekerMap = seekers.reduce((acc, curr) => {
-        acc[curr._id.toString()] = curr;
-        return acc;
-    }, {} as Record<string, any>);
+    const { job, applications, seekers: seekerMap } = await res.json();
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 lg:py-12">
@@ -63,7 +69,7 @@ export default async function ReferrerJobViewPage(props: { params: Promise<{ id:
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {applications.map((app) => {
+                        {applications.map((app: any) => {
                             const applicant = seekerMap[app.jobSeekerId.toString()];
                             if (!applicant) return null;
 

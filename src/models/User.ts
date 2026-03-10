@@ -10,6 +10,12 @@ export interface IUser extends mongoose.Document {
     image?: string;
     company?: string;
     jobTitle?: string;
+    bio?: string;
+    linkedIn?: string;
+    resumeUrl?: string;
+    skills?: string[];
+    preferredRole?: string;
+    preferredLocation?: string;
     isVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -44,6 +50,26 @@ const UserSchema = new mongoose.Schema<IUser>(
             type: String,
         },
         jobTitle: {
+            type: String,
+        },
+        bio: {
+            type: String,
+            maxlength: 150,
+        },
+        linkedIn: {
+            type: String,
+        },
+        resumeUrl: {
+            type: String,
+        },
+        skills: {
+            type: [String],
+            default: [],
+        },
+        preferredRole: {
+            type: String,
+        },
+        preferredLocation: {
             type: String,
         },
         isVerified: {

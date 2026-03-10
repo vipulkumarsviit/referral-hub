@@ -166,10 +166,10 @@ export default function SignupPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <Button variant="outline" type="button" onClick={() => signIn("google")}>
+                            <Button variant="outline" type="button" onClick={() => signIn("google", { callbackUrl: "/onboarding" })}>
                                 Google
                             </Button>
-                            <Button variant="outline" type="button" onClick={() => signIn("linkedin")}>
+                            <Button variant="outline" type="button" onClick={() => signIn("linkedin", { callbackUrl: "/onboarding" })}>
                                 LinkedIn
                             </Button>
                         </div>

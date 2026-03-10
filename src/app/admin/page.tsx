@@ -1,12 +1,9 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import dbConnect from "@/lib/mongodb";
-import { User } from "@/models/User";
-import { JobListing } from "@/models/JobListing";
-import { Application } from "@/models/Application";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Briefcase, FileText, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function AdminDashboardPage() {
     const session = await auth();
@@ -16,21 +13,38 @@ export default async function AdminDashboardPage() {
         redirect("/login");
     }
 
-    await dbConnect();
+    const baseUrl =
+        process.env.NEXTAUTH_URL ??
+        process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+        throw new Error("Base URL is not configured (set NEXTAUTH_URL or NEXT_PUBLIC_APP_URL)");
+    }
 
-    // Fetch aggregate data
-    const totalUsers = await User.countDocuments();
-    const totalReferrers = await User.countDocuments({ role: "referrer" });
-    const totalSeekers = await User.countDocuments({ role: "seeker" });
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
 
-    const totalListings = await JobListing.countDocuments();
-    const activeListings = await JobListing.countDocuments({ status: "active" });
+    const res = await fetch(`${baseUrl}/api/admin/overview`, {
+        cache: "no-store",
+        headers: {
+            Cookie: cookieHeader,
+        },
+    });
 
-    const totalApplications = await Application.countDocuments();
-    const acceptedApplications = await Application.countDocuments({ status: "Accepted" });
+    if (!res.ok) {
+        throw new Error("Failed to load admin overview");
+    }
 
-    const users = await User.find().sort({ createdAt: -1 }).limit(10).lean();
-    const listings = await JobListing.find().sort({ createdAt: -1 }).limit(10).lean();
+    const {
+        totalUsers,
+        totalReferrers,
+        totalSeekers,
+        totalListings,
+        activeListings,
+        totalApplications,
+        acceptedApplications,
+        users,
+        listings,
+    } = await res.json();
 
     const stats = [
         { label: "Total Users", value: totalUsers, icon: Users },

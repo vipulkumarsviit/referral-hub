@@ -1,15 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, ArrowLeft, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Loader2, Send } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-export default function MessagesApp({ appId }: { appId: string }) {
+export default function MessagesApp({
+    appId,
+    embedded = false,
+    title,
+    subtitle,
+    meta,
+}: {
+    appId: string;
+    embedded?: boolean;
+    title?: string;
+    subtitle?: string;
+    meta?: { initials?: string; name?: string; preview?: string };
+}) {
     const { data: session } = useSession();
     const router = useRouter();
     const [messages, setMessages] = useState<any[]>([]);
@@ -17,12 +28,37 @@ export default function MessagesApp({ appId }: { appId: string }) {
     const [sending, setSending] = useState(false);
     const [content, setContent] = useState("");
     const bottomRef = useRef<HTMLDivElement>(null);
+    const [appDetails, setAppDetails] = useState<{
+        position: string;
+        company: string;
+        referrerName?: string | null;
+        referrerPosition?: string | null;
+    } | null>(null);
 
     useEffect(() => {
         if (session) {
             fetchMessages();
         }
-    }, [session]);
+    }, [session, appId]);
+
+    useEffect(() => {
+        const fetchMeta = async () => {
+            try {
+                const res = await fetch(`/api/applications/meta/${appId}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                setAppDetails({
+                    position: data.position,
+                    company: data.company,
+                    referrerName: data.referrerName,
+                    referrerPosition: data.referrerPosition,
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchMeta();
+    }, [appId]);
 
     const fetchMessages = async () => {
         try {
@@ -74,21 +110,54 @@ export default function MessagesApp({ appId }: { appId: string }) {
     }
 
     const currentUserId = session?.user?.id;
-    const isReferrer = (session?.user as any)?.role === "referrer";
-    const backLink = isReferrer ? `/dashboard` : `/dashboard`;
-
-    return (
-        <div className="max-w-3xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
-            <Link href={backLink} className="inline-flex items-center text-sm font-semibold text-brand-dark/60 hover:text-primary mb-4 transition-colors">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
-            </Link>
-
-            <Card className="flex-1 border-brand-dark/10 shadow-sm flex flex-col overflow-hidden bg-white">
-                <div className="p-4 border-b border-brand-dark/5 bg-brand-dark/5 font-bold text-brand-dark">
-                    Conversation
+    const effectiveMeta =
+        meta || appDetails
+            ? {
+                  ...meta,
+                  ...(appDetails && {
+                      initials: appDetails.position,
+                      name: appDetails.company,
+                  }),
+              }
+            : undefined;
+    const threadCard = (
+        <div className="flex-1 flex flex-col overflow-hidden bg-white">
+            { effectiveMeta && (
+                <div className="p-4 border-b border-brand-dark/10 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                            {appDetails?.company?.charAt(0) || "?"}
+                        </div>
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm font-semibold text-brand-dark truncate">
+                                    {appDetails?.position || "Select a conversation"}
+                                </p>
+                                <span className="text-xs font-medium text-brand-dark/50 truncate">
+                                    @{appDetails?.company || ""}
+                                </span>
+                            </div>
+                            <div className="mt-1 flex items-center gap-2 text-[11px] font-semibold text-brand-dark/60">
+                                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                                <span className="uppercase tracking-wide">
+                                    Referral Submitted • Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {appDetails?.referrerName && (
+                        <div className="hidden sm:flex flex-col items-end text-right">
+                            <span className="text-xs font-semibold text-brand-dark">
+                                {appDetails.referrerName}
+                            </span>
+                            <span className="text-[11px] font-medium text-primary">
+                                {appDetails.referrerPosition || "Your Referrer"}
+                            </span>
+                        </div>
+                    )}
                 </div>
-
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-brand-bg/50">
+            )}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-brand-bg/50">
                     {messages.length === 0 ? (
                         <div className="flex items-center justify-center h-full text-brand-dark/40">
                             No messages yet. Say hello!
@@ -106,22 +175,30 @@ export default function MessagesApp({ appId }: { appId: string }) {
                         })
                     )}
                     <div ref={bottomRef} />
-                </div>
+            </div>
+            <div className="p-4 bg-white border-t border-brand-dark/5">
+                <form onSubmit={sendMessage} className="flex gap-2">
+                    <Input
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="Type a message..."
+                        className="flex-1 h-12 bg-brand-dark/5 border-none focus-visible:ring-1 focus-visible:ring-primary"
+                    />
+                    <Button type="submit" disabled={sending || !content.trim()} className="h-12 w-12 rounded-xl bg-primary text-white">
+                        {sending ? <Loader2 className="animate-spin h-5 w-5" /> : <Send className="h-5 w-5 ml-1" />}
+                    </Button>
+                </form>
+            </div>
+        </div>
+    );
 
-                <div className="p-4 bg-white border-t border-brand-dark/5">
-                    <form onSubmit={sendMessage} className="flex gap-2">
-                        <Input
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Type a message..."
-                            className="flex-1 h-12 bg-brand-dark/5 border-none focus-visible:ring-1 focus-visible:ring-primary"
-                        />
-                        <Button type="submit" disabled={sending || !content.trim()} className="h-12 w-12 rounded-xl bg-primary text-white">
-                            {sending ? <Loader2 className="animate-spin h-5 w-5" /> : <Send className="h-5 w-5 ml-1" />}
-                        </Button>
-                    </form>
-                </div>
-            </Card>
+    if (embedded) {
+        return <div className="h-full flex flex-col">{threadCard}</div>;
+    }
+
+    return (
+        <div className="max-w-3xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
+            {threadCard}
         </div>
     );
 }

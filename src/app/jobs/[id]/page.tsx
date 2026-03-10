@@ -1,20 +1,37 @@
-import { notFound } from "next/navigation";
-import dbConnect from "@/lib/mongodb";
-import { JobListing } from "@/models/JobListing";
-import { User } from "@/models/User";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Briefcase, Clock, FileText } from "lucide-react";
+import { Building2, MapPin, Briefcase, Clock, AlertCircle, FileText } from "lucide-react";
 import Link from "next/link";
 import ApplyButton from "./ApplyButton"; // Client component
+import { Button } from "@/components/ui/button";
+import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function JobDetailPage(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
-    await dbConnect();
 
-    const job = await JobListing.findById(params.id).lean();
-    if (!job) return notFound();
+    const baseUrl =
+        process.env.NEXTAUTH_URL ??
+        process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+        throw new Error("Base URL is not configured (set NEXTAUTH_URL or NEXT_PUBLIC_APP_URL)");
+    }
 
-    const referrer = await User.findById(job.referrerId).lean();
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const res = await fetch(`${baseUrl}/api/jobs/${params.id}`, {
+        cache: "no-store",
+        headers: {
+            Cookie: cookieHeader,
+        },
+    });
+
+    if (res.status === 404) return notFound();
+    if (!res.ok) {
+        throw new Error("Failed to load job details");
+    }
+
+    const { job, referrer, missingResume, hasApplied } = await res.json();
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 lg:py-12">
@@ -72,14 +89,33 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                         </div>
                     )}
                 </div>
-
+                {missingResume && (
+                    <div className="my-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-yellow-300 bg-yellow-50 px-4 py-3 text-yellow-800">
+                        <div className="flex flex-wrap items-center gap-3">
+                        <AlertCircle className="h-5 w-5" />
+                        <span className="text-sm font-semibold">Add a resume link to complete your profile.</span>
+                        </div>
+                        <Link href="/dashboard/settings?missing=resume">
+                            <Button variant="outline" className="h-9 bg-white text-yellow-900 border-yellow-300">
+                                Complete Profile
+                            </Button>
+                        </Link>
+                    </div>
+                )}
                 {/* Apply Section */}
                 <div className="bg-brand-dark rounded-3xl p-8 text-white mt-12 flex flex-col md:flex-row shadow-2xl items-center justify-between gap-6">
                     <div>
                         <h3 className="text-2xl font-bold mb-2">Ready to apply?</h3>
                         <p className="text-white/60">Your resume profile will be shared directly with the referrer.</p>
+
                     </div>
-                    <ApplyButton jobId={job._id.toString()} />
+                    {hasApplied ? (
+                        <Button disabled className="h-14 px-8 text-lg font-bold rounded-xl bg-white/20 text-white cursor-not-allowed">
+                            Already Applied
+                        </Button>
+                    ) : (
+                        <ApplyButton jobId={job._id.toString()} />
+                    )}
                 </div>
             </div>
         </div>

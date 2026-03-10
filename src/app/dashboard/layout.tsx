@@ -134,8 +134,8 @@ export default function DashboardLayout({
                             <DropdownMenuContent
                                 side="top"
                                 align="end"
-                                sideOffset={8}
-                                alignOffset={-4}
+                                sideOffset={20}
+                                alignOffset={0}
                                 className="min-w-48 rounded-xl border border-brand-dark/10 bg-white p-1.5 shadow-xl"
                             >
                                 <DropdownMenuGroup>
@@ -164,6 +164,7 @@ export default function DashboardLayout({
                                 >
                                     Settings
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                     onClick={() => signOut({ callbackUrl: "/" })}
                                     variant="destructive"
@@ -230,6 +231,7 @@ export default function DashboardLayout({
                             >
                                 Settings
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={() => signOut({ callbackUrl: "/" })}
                                 variant="destructive"

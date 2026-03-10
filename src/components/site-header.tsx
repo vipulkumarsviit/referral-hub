@@ -60,12 +60,12 @@ export function SiteHeader() {
                         </>
                     ) : (
                         <>
-                            <Link href="/login" passHref legacyBehavior>
+                            <Link href="/login">
                                 <Button variant="ghost" className="font-bold text-brand-dark">
                                     Log in
                                 </Button>
                             </Link>
-                            <Link href="/signup" passHref legacyBehavior>
+                            <Link href="/signup">
                                 <Button className="font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
                                     Sign up
                                 </Button>
@@ -108,13 +108,15 @@ export function SiteHeader() {
                                 </Button>
                             ) : (
                                 <>
-                                    <Link href="/login" passHref legacyBehavior>
-                                        <Button variant="ghost" className="justify-start font-bold" onClick={() => setOpen(false)}>
+                                    <Link href="/login" onClick={() => setOpen(false)}>
+                                        <Button variant="ghost" className="justify-start font-bold">
                                             Log in
                                         </Button>
                                     </Link>
-                                    <Link href="/signup" passHref legacyBehavior>
-                                        <Button className="font-bold" onClick={() => setOpen(false)}>Sign up</Button>
+                                    <Link href="/signup" onClick={() => setOpen(false)}>
+                                        <Button className="font-bold">
+                                            Sign up
+                                        </Button>
                                     </Link>
                                 </>
                             )}

@@ -40,7 +40,34 @@ export default function ProfileForm() {
         setMessage("");
 
         const formData = new FormData(e.currentTarget);
-        const data = Object.fromEntries(formData.entries());
+        const raw = Object.fromEntries(formData.entries());
+        const data: Record<string, any> = { ...raw };
+        if (typeof data.resumeUrl === "string") data.resumeUrl = data.resumeUrl.trim();
+        if (typeof data.linkedIn === "string") data.linkedIn = data.linkedIn.trim();
+        if (typeof data.skills === "string") data.skills = (data.skills as string).trim();
+        const prev = user;
+
+        if (data.resumeUrl) {
+            try {
+                new URL(String(data.resumeUrl));
+            } catch {
+                setSaving(false);
+                setMessage("Please enter a valid Resume URL");
+                return;
+            }
+        }
+        if (data.linkedIn) {
+            try {
+                new URL(String(data.linkedIn));
+            } catch {
+                setSaving(false);
+                setMessage("Please enter a valid LinkedIn URL");
+                return;
+            }
+        }
+        try {
+            console.log("Submitting profile payload", data);
+        } catch {}
 
         try {
             const res = await fetch("/api/user/profile", {
@@ -50,9 +77,24 @@ export default function ProfileForm() {
             });
 
             if (res.ok) {
-                setMessage("Profile updated successfully");
+                const json = await res.json();
+                setUser(json.user);
+                const changed: string[] = [];
+                const pick = (v: any) => (typeof v === "string" ? v.trim() : v);
+                if (pick(prev?.name) !== pick(json.user?.name)) changed.push("name");
+                if (pick(prev?.jobTitle) !== pick(json.user?.jobTitle)) changed.push("job title");
+                if (pick(prev?.company) !== pick(json.user?.company)) changed.push("company");
+                if ((prev?.skills || []).join(",") !== (json.user?.skills || []).join(",")) changed.push("skills");
+                if (pick(prev?.preferredRole) !== pick(json.user?.preferredRole)) changed.push("preferred role");
+                if (pick(prev?.preferredLocation) !== pick(json.user?.preferredLocation)) changed.push("location");
+                if (pick(prev?.resumeUrl) !== pick(json.user?.resumeUrl)) changed.push("resume link");
+                if (pick(prev?.linkedIn) !== pick(json.user?.linkedIn)) changed.push("LinkedIn");
+                if (pick(prev?.bio) !== pick(json.user?.bio)) changed.push("bio");
+                const suffix = changed.length ? ` Updated: ${changed.join(", ")}.` : "";
+                setMessage(`Profile updated successfully.${suffix}`);
             } else {
-                setMessage("Failed to update profile");
+                const text = await res.text().catch(() => "");
+                setMessage(text || "Failed to update profile");
             }
         } catch (err) {
             setMessage("An error occurred");
@@ -125,20 +167,32 @@ export default function ProfileForm() {
                                 <div className="space-y-2">
                                     <Label htmlFor="skills">Key Skills</Label>
                                     <Input id="skills" name="skills" defaultValue={user.skills?.join(", ")} className="h-11" />
+                                    {user.skills?.length ? (
+                                        <div className="text-xs text-brand-dark/60">Current: {user.skills.join(", ")}</div>
+                                    ) : null}
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="preferredRole">Preferred Role</Label>
                                         <Input id="preferredRole" name="preferredRole" defaultValue={user.preferredRole} className="h-11" />
+                                        {user.preferredRole && (
+                                            <div className="text-xs text-brand-dark/60">Current: {user.preferredRole}</div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="preferredLocation">Location</Label>
                                         <Input id="preferredLocation" name="preferredLocation" defaultValue={user.preferredLocation} className="h-11" />
+                                        {user.preferredLocation && (
+                                            <div className="text-xs text-brand-dark/60">Current: {user.preferredLocation}</div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="resumeUrl">Resume Link / URL</Label>
                                     <Input id="resumeUrl" name="resumeUrl" type="url" defaultValue={user.resumeUrl} className="h-11" />
+                                    {user.resumeUrl && (
+                                        <div className="text-xs text-brand-dark/60">Current: {user.resumeUrl}</div>
+                                    )}
                                 </div>
                             </>
                         )}
@@ -146,6 +200,9 @@ export default function ProfileForm() {
                         <div className="space-y-2">
                             <Label htmlFor="linkedIn">LinkedIn Profile</Label>
                             <Input id="linkedIn" name="linkedIn" type="url" defaultValue={user.linkedIn} className="h-11" />
+                            {user.linkedIn && (
+                                <div className="text-xs text-brand-dark/60">Current: {user.linkedIn}</div>
+                            )}
                         </div>
 
                         {message && (

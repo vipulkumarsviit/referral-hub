@@ -12,6 +12,7 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [needsProfile, setNeedsProfile] = useState(false);
 
     const handleApply = async () => {
         if (!session) {
@@ -38,7 +39,11 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.message || "Failed to apply");
+                const msg = data.message || "Failed to apply";
+                if (res.status === 400 && typeof msg === "string" && msg.toLowerCase().includes("resume link")) {
+                    setNeedsProfile(true);
+                }
+                throw new Error(msg);
             }
 
             setMessage("Application sent successfully!");
@@ -52,6 +57,15 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
     return (
         <div className="flex flex-col items-center sm:items-end gap-3 w-full md:w-auto">
             {error && <p className="text-red-300 text-sm font-medium bg-red-950/50 px-3 py-1.5 rounded-lg">{error}</p>}
+            {needsProfile && (
+                <Button
+                    onClick={() => router.push("/dashboard/settings?missing=resume")}
+                    variant="outline"
+                    className="w-full sm:w-auto h-10 font-semibold"
+                >
+                    Complete Profile
+                </Button>
+            )}
             {message ? (
                 <div className="flex items-center gap-2 text-success font-bold bg-success-light px-6 py-3 rounded-xl">
                     <Sparkles className="h-5 w-5" />
