@@ -54,8 +54,10 @@ export default function SignupPage() {
                 router.push("/onboarding");
                 router.refresh();
             }
-        } catch (err: any) {
-            setError(err.message || "An unexpected error occurred");
+        } catch (err: unknown) {
+            const message =
+                err instanceof Error ? err.message : "An unexpected error occurred";
+            setError(message);
             setLoading(false);
         }
     };
@@ -166,13 +168,28 @@ export default function SignupPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <Button variant="outline" type="button" onClick={() => signIn("google", { callbackUrl: "/onboarding" })}>
+                            <Button
+                                variant="outline"
+                                type="button"
+                                disabled={role === "referrer"}
+                                onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
+                            >
                                 Google
                             </Button>
-                            <Button variant="outline" type="button" onClick={() => signIn("linkedin", { callbackUrl: "/onboarding" })}>
+                            <Button
+                                variant="outline"
+                                type="button"
+                                disabled={role === "referrer"}
+                                onClick={() => signIn("linkedin", { callbackUrl: "/onboarding" })}
+                            >
                                 LinkedIn
                             </Button>
                         </div>
+                        {role === "referrer" && (
+                            <p className="mt-2 text-xs text-brand-dark/50">
+                                Social sign-in is available only for job seekers.
+                            </p>
+                        )}
                     </CardContent>
                     <CardFooter className="justify-center border-t border-brand-dark/5 p-4 py-6">
                         <p className="text-sm text-brand-dark/60">

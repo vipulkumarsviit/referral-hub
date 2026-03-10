@@ -83,9 +83,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     role: "seeker",
                     isVerified: false,
                 });
-            } else if (!existingUser.image && user.image) {
-                existingUser.image = user.image;
-                await existingUser.save();
+            } else {
+                // OAuth is only allowed for job seekers.
+                if (existingUser.role === "referrer") {
+                    return false;
+                }
+
+                if (!existingUser.image && user.image) {
+                    existingUser.image = user.image;
+                    await existingUser.save();
+                }
             }
 
             return true;
