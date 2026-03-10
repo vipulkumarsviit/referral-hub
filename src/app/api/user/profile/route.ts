@@ -3,7 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import { User } from "@/models/User";
 import { auth } from "@/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const session = await auth();
         if (!session || !session.user) {
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
         }
 
         return NextResponse.json({ user }, { status: 200 });
-    } catch (error: any) {
+    } catch {
         return NextResponse.json({ message: "Server error" }, { status: 500 });
     }
 }
@@ -31,28 +31,37 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const allowedFields = [
-            "name",
-            "jobTitle",
-            "company",
-            "bio",
-            "linkedIn",
-            "resumeUrl",
-            "skills",
-            "preferredRole",
-            "preferredLocation",
-            "image",
-        ] as const;
+        await dbConnect();
+        const currentUser = await User.findById(session.user.id).select("role");
+        if (!currentUser) {
+            return NextResponse.json({ message: "User not found" }, { status: 404 });
+        }
+
+        const role = currentUser.role as "seeker" | "referrer" | "admin";
+
+        const commonFields = ["name", "jobTitle", "bio", "image"] as const;
+        const seekerOnlyFields = ["linkedIn", "resumeUrl", "skills", "preferredRole", "preferredLocation"] as const;
+        const referrerOnlyFields = ["company"] as const;
+
+        const allowedFields = new Set<string>([...commonFields]);
+        if (role === "seeker") {
+            seekerOnlyFields.forEach((f) => allowedFields.add(f));
+        }
+        if (role === "referrer") {
+            referrerOnlyFields.forEach((f) => allowedFields.add(f));
+        }
 
         // Build a sanitized payload
-        const data: Record<string, any> = {};
+        const data: Record<string, unknown> = {};
         for (const key of allowedFields) {
-            if (typeof body[key] !== "undefined") data[key] = body[key];
+            if (typeof body[key] !== "undefined") {
+                data[key] = body[key];
+            }
         }
 
         // Normalize skills from comma-separated string -> string[]
         if (typeof data.skills === "string") {
-            data.skills = (data.skills as string)
+            data.skills = data.skills
                 .split(",")
                 .map((s) => s.trim())
                 .filter(Boolean);
@@ -65,11 +74,10 @@ export async function PUT(req: Request) {
         if (typeof data.linkedIn === "string") {
             data.linkedIn = data.linkedIn.trim();
         }
-        await dbConnect();
 
         // Ensure user is not tampering with their role or isVerified status
-        delete (data as any).role;
-        delete (data as any).isVerified;
+        delete data.role;
+        delete data.isVerified;
         const updatedUser = await User.findByIdAndUpdate(
             session.user.id,
             { $set: data },
@@ -77,7 +85,7 @@ export async function PUT(req: Request) {
         );
 
         return NextResponse.json({ user: updatedUser, message: "Profile updated" }, { status: 200 });
-    } catch (error: any) {
+    } catch {
         return NextResponse.json({ message: "Server error" }, { status: 500 });
     }
 }
