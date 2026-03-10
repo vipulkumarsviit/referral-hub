@@ -9,8 +9,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -35,6 +33,12 @@ import {
   Settings,
   LogOut,
   MoreHorizontal,
+  UserCircle2,
+  Sparkles,
+  ExternalLink,
+  Globe,
+  Gauge,
+  ChevronRight,
 } from "lucide-react";
 
 type NavRole = "seeker" | "referrer";
@@ -46,13 +50,13 @@ const navItems: {
   href: string;
   roles: SidebarRole[];
 }[] = [
-  { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
-  { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
-  { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
-  { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
-  { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer", "admin"] },
-];
+    { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
+    { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
+    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
+    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
+    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer", "admin"] },
+  ];
 
 export default function DashboardLayout({
   children,
@@ -90,16 +94,58 @@ export default function DashboardLayout({
   }, [session]);
 
   const displayName = profile?.name || session?.user?.name || "";
+  const displayEmail = session?.user?.email || "";
   const jobTitle = profile?.jobTitle || "";
   const role = (session?.user as { role?: SidebarRole } | undefined)?.role;
   const initials = displayName
     ? displayName
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((p: string) => p[0]?.toUpperCase())
-        .join("")
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p: string) => p[0]?.toUpperCase())
+      .join("")
     : "";
+
+  const accountMenu = (
+    <>
+      <div className="space-y-1 px-3 py-2 text-sm text-brand-dark/55">
+        <div className="grid grid-cols-[1rem_1fr] items-center gap-3 leading-none">
+          <span className="flex h-4 w-4 items-center justify-center">
+            <UserCircle2 className="h-4 w-4" />
+          </span>
+          <span className="truncate">{displayEmail || displayName || "Account"}</span>
+        </div>
+      </div>
+
+      <DropdownMenuSeparator />
+
+      <DropdownMenuItem
+        onClick={() => router.push("/dashboard/settings")}
+        className="mx-1.5 grid grid-cols-[1rem_1fr_auto] items-center gap-3 rounded-xl px-3 py-2.5 text-base font-medium text-brand-dark"
+      >
+        <span className="flex h-4 w-4 items-center justify-center">
+          <Settings className="h-4 w-4" />
+        </span>
+        <span>Settings</span>
+        <span className="h-4 w-4" />
+      </DropdownMenuItem>
+
+      <DropdownMenuSeparator />
+
+
+      <DropdownMenuItem
+        onClick={() => signOut({ callbackUrl: "/" })}
+        variant="destructive"
+        className="mx-1.5 grid grid-cols-[1rem_1fr_auto] items-center gap-3 rounded-xl px-3 py-2.5 text-base font-medium"
+      >
+        <span className="flex h-4 w-4 items-center justify-center">
+          <LogOut className="h-4 w-4" />
+        </span>
+        <span>Log out</span>
+        <span className="h-4 w-4" />
+      </DropdownMenuItem>
+    </>
+  );
 
   return (
     <SidebarProvider className="h-screen overflow-hidden">
@@ -161,36 +207,9 @@ export default function DashboardLayout({
                 align="end"
                 sideOffset={20}
                 alignOffset={0}
-                className="min-w-48 rounded-xl border border-brand-dark/10 bg-white p-1.5 shadow-xl"
+                className="w-[320px] rounded-3xl border border-brand-dark/15 bg-white p-1.5 shadow-xl"
               >
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="px-2 py-1.5">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
-                          {initials || "?"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="leading-tight">
-                        <div className="text-xs font-bold text-brand-dark">{displayName || "—"}</div>
-                        <div className="text-[10px] text-brand-dark/60">{jobTitle || "—"}</div>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="font-medium">
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  variant="destructive"
-                  className="font-medium"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </DropdownMenuItem>
+                {accountMenu}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -223,36 +242,9 @@ export default function DashboardLayout({
               side="bottom"
               align="end"
               sideOffset={8}
-              className="min-w-48 rounded-xl border border-brand-dark/10 bg-white p-1.5 shadow-xl"
+              className="w-[320px] rounded-3xl border border-brand-dark/15 bg-white p-1.5 shadow-xl"
             >
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="px-2 py-1.5">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
-                        {initials || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="leading-tight">
-                      <div className="text-xs font-bold text-brand-dark">{displayName || "—"}</div>
-                      <div className="text-[10px] text-brand-dark/60">{jobTitle || "—"}</div>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="font-medium">
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => signOut({ callbackUrl: "/" })}
-                variant="destructive"
-                className="font-medium"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
+              {accountMenu}
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

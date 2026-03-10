@@ -7,12 +7,6 @@ import { Menu, Hexagon, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 
-const navLinks = [
-    { label: "How it works", href: "#how-it-works" },
-    { label: "For Companies", href: "#" },
-    { label: "Pricing", href: "#" },
-];
-
 export function SiteHeader() {
     const [open, setOpen] = useState(false);
     const { data: session } = useSession();
@@ -33,24 +27,6 @@ export function SiteHeader() {
                         ReferralHub
                     </span>
                 </Link>
-
-                {/* Desktop Nav */}
-                <nav className="hidden items-center gap-8 md:flex">
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.label}
-                            href={link.href}
-                            className="text-sm font-semibold text-brand-dark/70 transition-colors hover:text-primary"
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                    {session && (
-                        <Link href={dashboardHref} className="text-sm font-semibold text-brand-dark/70 transition-colors hover:text-primary">
-                            Dashboard
-                        </Link>
-                    )}
-                </nav>
 
                 {/* Desktop Auth Buttons */}
                 <div className="hidden items-center gap-3 sm:flex">
@@ -85,16 +61,6 @@ export function SiteHeader() {
                     </SheetTrigger>
                     <SheetContent side="right" className="w-72">
                         <nav className="mt-8 flex flex-col gap-4">
-                            {navLinks.map((link) => (
-                                <a
-                                    key={link.label}
-                                    href={link.href}
-                                    onClick={() => setOpen(false)}
-                                    className="text-base font-semibold text-brand-dark/70 transition-colors hover:text-primary"
-                                >
-                                    {link.label}
-                                </a>
-                            ))}
                             {session && (
                                 <Link
                                     href={dashboardHref}
