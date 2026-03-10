@@ -97,7 +97,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col gap-4 sm:flex-row">
-                  <Link href="/browse">
+                  <Link href="/jobs">
                     <Button
                       size="lg"
                       className="h-14 rounded-xl px-8 text-base font-bold shadow-xl shadow-primary/25 transition-all hover:bg-primary/90"
@@ -254,7 +254,7 @@ export default function Home() {
               most innovative companies.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/browse">
+              <Link href="/jobs">
                 <Button
                   size="lg"
                   className="rounded-xl bg-white px-8 py-4 text-base font-bold text-primary transition-all hover:bg-white/90"

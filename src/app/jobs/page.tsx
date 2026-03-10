@@ -1,154 +1,282 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Briefcase, Search, ArrowRight, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+    Search,
+    MapPin,
+    Briefcase,
+    Clock,
+    ShieldCheck,
+    Sparkles,
+    Filter,
+    ChevronDown,
+    Loader2,
+} from "lucide-react";
 
-export default function JobsPage() {
-    const [listings, setListings] = useState<any[]>([]);
+type Listing = {
+    _id: string;
+    title: string;
+    company: string;
+    location: string;
+    roleType: string;
+    experienceLevel: string;
+    deadline?: string;
+    createdAt?: string;
+};
+
+const roleTypeOptions = ["Full-time", "Part-time", "Contract"];
+const experienceOptions = ["Entry", "Mid", "Senior", "Staff"];
+
+function getDaysLeft(deadline?: string, createdAt?: string) {
+    if (deadline) {
+        const now = new Date();
+        const end = new Date(deadline);
+        const ms = end.getTime() - now.getTime();
+        const days = Math.ceil(ms / (1000 * 60 * 60 * 24));
+        if (days > 0) return `${days}d left`;
+    }
+
+    if (createdAt) {
+        const created = new Date(createdAt);
+        return `Posted ${created.toLocaleDateString()}`;
+    }
+
+    return "Active";
+}
+
+export default function BrowsePage() {
+    const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterRole, setFilterRole] = useState("");
     const [filterExp, setFilterExp] = useState("");
 
-    const fetchJobs = async () => {
-        setLoading(true);
-        try {
-            const params = new URLSearchParams();
-            if (searchQuery) params.append("q", searchQuery);
-            if (filterRole) params.append("roleType", filterRole);
-            if (filterExp) params.append("experienceLevel", filterExp);
-
-            const res = await fetch(`/api/jobs?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                setListings(data.listings);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchJobs();
-    }, [filterRole, filterExp]); // Re-fetch on filter change
+        let ignore = false;
 
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        fetchJobs();
-    };
+        async function fetchListings() {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                if (searchQuery.trim()) params.append("q", searchQuery.trim());
+                if (filterRole) params.append("roleType", filterRole);
+                if (filterExp) params.append("experienceLevel", filterExp);
+
+                const res = await fetch(`/api/jobs?${params.toString()}`);
+                if (!res.ok) {
+                    throw new Error("Failed to load listings");
+                }
+
+                const data = (await res.json()) as { listings: Listing[] };
+                if (!ignore) {
+                    setListings(data.listings || []);
+                }
+            } catch {
+                if (!ignore) {
+                    setListings([]);
+                }
+            } finally {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        fetchListings();
+
+        return () => {
+            ignore = true;
+        };
+    }, [searchQuery, filterRole, filterExp]);
 
     return (
         <div className="min-h-screen bg-background">
             <SiteHeader />
-            <main className="mx-auto max-w-7xl px-4 py-8 lg:py-12">
-                <div className="mb-10 text-center">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-brand-dark mb-4">
-                        Find your next <span className="text-primary">referral</span>
-                    </h1>
-                    <p className="text-lg md:text-xl text-brand-dark/60 max-w-2xl mx-auto">
-                        Skip the line. Apply directly through verified employees at top companies.
-                    </p>
-                </div>
 
-                {/* Search and Filters */}
-                <div className="mb-12 bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-brand-dark/5">
-                    <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-4">
-                        <div className="relative flex-grow">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-dark/40" />
-                            <Input
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search role, company, or location..."
-                                className="pl-10 h-12 text-base rounded-xl border-brand-dark/10"
-                            />
-                        </div>
+            <div className="mx-auto max-w-7xl px-6 py-10">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-[280px_1fr]">
+                    <aside className="hidden lg:block">
+                        <div className="sticky top-24 space-y-8">
+                            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-brand-dark/40">
+                                <Filter className="h-4 w-4" />
+                                Filters
+                            </h3>
 
-                        <select
-                            value={filterRole}
-                            onChange={(e) => setFilterRole(e.target.value)}
-                            className="h-12 rounded-xl border border-brand-dark/10 bg-white px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-w-[150px]"
-                        >
-                            <option value="">All Types</option>
-                            <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
-                            <option value="Contract">Contract</option>
-                        </select>
+                            <div>
+                                <button className="mb-3 flex w-full items-center justify-between text-sm font-bold text-brand-dark">
+                                    Role Type
+                                    <ChevronDown className="h-4 w-4 text-brand-dark/40" />
+                                </button>
+                                <div className="space-y-2">
+                                    {roleTypeOptions.map((option) => {
+                                        const checked = filterRole === option;
+                                        return (
+                                            <label
+                                                key={option}
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-dark/70 transition-colors hover:bg-brand-dark/5"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => setFilterRole(checked ? "" : option)}
+                                                    className="h-4 w-4 rounded border-brand-dark/20 text-primary focus:ring-primary"
+                                                />
+                                                {option}
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
 
-                        <select
-                            value={filterExp}
-                            onChange={(e) => setFilterExp(e.target.value)}
-                            className="h-12 rounded-xl border border-brand-dark/10 bg-white px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-w-[150px]"
-                        >
-                            <option value="">All Levels</option>
-                            <option value="Entry">Entry (0-2y)</option>
-                            <option value="Mid">Mid (3-5y)</option>
-                            <option value="Senior">Senior (5y+)</option>
-                        </select>
+                            <div>
+                                <button className="mb-3 flex w-full items-center justify-between text-sm font-bold text-brand-dark">
+                                    Experience Level
+                                    <ChevronDown className="h-4 w-4 text-brand-dark/40" />
+                                </button>
+                                <div className="space-y-2">
+                                    {experienceOptions.map((option) => {
+                                        const checked = filterExp === option;
+                                        return (
+                                            <label
+                                                key={option}
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-dark/70 transition-colors hover:bg-brand-dark/5"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => setFilterExp(checked ? "" : option)}
+                                                    className="h-4 w-4 rounded border-brand-dark/20 text-primary focus:ring-primary"
+                                                />
+                                                {option}
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
 
-                        <Button type="submit" className="h-12 px-8 font-bold rounded-xl shadow-lg shadow-primary/20">
-                            Search
-                        </Button>
-                    </form>
-                </div>
-
-                {/* Results */}
-                {loading ? (
-                    <div className="flex justify-center p-12"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>
-                ) : listings.length === 0 ? (
-                    <div className="text-center p-12 bg-white rounded-3xl border border-brand-dark/5 shadow-sm">
-                        <h3 className="text-xl font-bold text-brand-dark">No referrals found</h3>
-                        <p className="text-brand-dark/60 mt-2">Try adjusting your search filters.</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {listings.map((job) => (
-                            <Card key={job._id} className="flex flex-col border-brand-dark/5 shadow-sm hover:shadow-md transition-shadow">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start gap-4 mb-2">
-                                        <div className="p-2.5 bg-brand-dark/5 rounded-xl text-brand-dark shrink-0">
-                                            <Building2 className="h-6 w-6" />
-                                        </div>
-                                        <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/10 border-none font-bold">
-                                            {job.experienceLevel}
-                                        </Badge>
+                            <Card className="border-brand-dark/5 bg-gradient-to-br from-primary/10 to-primary/5 shadow-none">
+                                <CardContent className="p-5">
+                                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20">
+                                        <Sparkles className="h-5 w-5 text-primary" />
                                     </div>
-                                    <CardTitle className="text-xl font-bold text-brand-dark line-clamp-1">{job.title}</CardTitle>
-                                    <CardDescription className="text-sm font-medium text-brand-dark line-clamp-1">{job.company}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-grow space-y-4 pt-0">
-                                    <div className="flex flex-wrap gap-y-2 gap-x-4 text-sm text-brand-dark/60">
-                                        <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {job.location}</span>
-                                        <span className="flex items-center gap-1"><Briefcase className="h-4 w-4" /> {job.roleType}</span>
-                                    </div>
-                                    <p className="text-sm text-brand-dark/60 line-clamp-3">
-                                        {job.description}
+                                    <h4 className="font-bold text-brand-dark">Boost your profile</h4>
+                                    <p className="mt-1 text-xs text-brand-dark/60">
+                                        Complete your profile to increase your chances of getting a referral by 3x.
                                     </p>
-                                </CardContent>
-                                <CardFooter className="pt-4 border-t border-brand-dark/5 flex justify-between items-center">
-                                    <span className="text-xs text-brand-dark/40 flex items-center">
-                                        <Clock className="mr-1 h-3 w-3" />
-                                        {new Date(job.createdAt).toLocaleDateString()}
-                                    </span>
-                                    <Link href={`/jobs/${job._id}`}>
-                                        <Button variant="ghost" className="text-primary hover:text-primary hover:bg-primary/5 font-bold p-0 px-3">
-                                            View Details <ArrowRight className="ml-1 h-4 w-4" />
+                                    <Link href="/dashboard/settings">
+                                        <Button size="sm" className="mt-4 w-full text-xs font-bold">
+                                            Complete Profile
                                         </Button>
                                     </Link>
-                                </CardFooter>
+                                </CardContent>
                             </Card>
-                        ))}
+                        </div>
+                    </aside>
+
+                    <div>
+                        <div className="mb-8">
+                            <h1 className="text-3xl font-extrabold text-brand-dark md:text-4xl">
+                                Active Referral Listings
+                            </h1>
+                            <p className="mt-2 text-brand-dark/60">
+                                Showing {listings.length} open opportunities from verified employees
+                            </p>
+
+                            <div className="relative mt-6">
+                                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-dark/40" />
+                                <Input
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search by role, company, or location..."
+                                    className="h-12 rounded-xl border-brand-dark/10 bg-white pl-12 text-base shadow-sm placeholder:text-brand-dark/40 focus-visible:ring-primary"
+                                />
+                            </div>
+                        </div>
+
+                        {loading ? (
+                            <div className="flex justify-center p-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : listings.length === 0 ? (
+                            <Card className="border-brand-dark/5 bg-white shadow-sm">
+                                <CardContent className="p-12 text-center">
+                                    <h3 className="text-xl font-bold text-brand-dark">No referrals found</h3>
+                                    <p className="mt-2 text-brand-dark/60">Try adjusting your filters or search.</p>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                {listings.map((listing) => (
+                                    <Card
+                                        key={listing._id}
+                                        className="group border-brand-dark/5 bg-white shadow-sm transition-all hover:border-primary/20 hover:shadow-md"
+                                    >
+                                        <CardContent className="p-6">
+                                            <div className="mb-4 flex items-start justify-between">
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-brand-dark transition-colors group-hover:text-primary">
+                                                        {listing.title}
+                                                    </h3>
+                                                    <div className="mt-1 flex items-center gap-2 text-sm text-brand-dark/60">
+                                                        <span>{listing.company}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-4 flex items-center gap-2">
+                                                <Badge variant="secondary" className="gap-1 bg-success-light/50 font-medium text-success">
+                                                    <ShieldCheck className="h-3 w-3" />
+                                                    Verified listing
+                                                </Badge>
+                                            </div>
+
+                                            <div className="mb-5 flex flex-wrap items-center gap-4 text-sm text-brand-dark/60">
+                                                <span className="flex items-center gap-1">
+                                                    <MapPin className="h-3.5 w-3.5" />
+                                                    {listing.location}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Briefcase className="h-3.5 w-3.5" />
+                                                    {listing.roleType}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Clock className="h-3.5 w-3.5" />
+                                                    {getDaysLeft(listing.deadline, listing.createdAt)}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <Link href={`/jobs/${listing._id}`} className="flex-1">
+                                                    <Button size="sm" className="w-full font-bold shadow-sm shadow-primary/20">
+                                                        Request Referral
+                                                    </Button>
+                                                </Link>
+                                                <Link href={`/jobs/${listing._id}`}>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="border-brand-dark/10 font-bold text-brand-dark"
+                                                    >
+                                                        View Details
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                )}
-            </main>
+                </div>
+            </div>
+
             <SiteFooter />
         </div>
     );

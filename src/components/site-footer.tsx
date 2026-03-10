@@ -33,7 +33,7 @@ export function SiteFooter() {
 
                         <div className="flex flex-wrap gap-3">
                             <Link
-                                href="/browse"
+                                href="/jobs"
                                 className="inline-flex items-center gap-2 rounded-full border border-brand-dark/10 px-4 py-2 text-xs font-semibold text-brand-dark transition-colors hover:border-primary hover:text-primary"
                             >
                                 Browse referrals <ArrowRight className="h-3.5 w-3.5" />
