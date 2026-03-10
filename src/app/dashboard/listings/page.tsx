@@ -41,7 +41,7 @@ export default async function MyListingsPage() {
     const { listings: withCounts } = await res.json();
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 lg:py-12">
+        <div>
             <div className="mb-8 flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-extrabold text-brand-dark">My Listings</h1>

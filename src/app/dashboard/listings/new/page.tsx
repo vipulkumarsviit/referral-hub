@@ -46,11 +46,11 @@ export default function NewListingPage() {
     };
 
     if ((session?.user as any)?.role !== "referrer") {
-        return <div className="p-12 text-center text-brand-dark/60">Only referrers can access this page.</div>;
+        return <div className="py-12 text-center text-brand-dark/60">Only referrers can access this page.</div>;
     }
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-8 lg:py-12">
+        <div>
             <Link href="/dashboard" className="inline-flex items-center text-sm font-semibold text-brand-dark/60 hover:text-primary mb-6 transition-colors">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
             </Link>

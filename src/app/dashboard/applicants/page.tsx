@@ -39,7 +39,7 @@ export default async function ApplicantsPage() {
     const { items } = await res.json();
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 lg:py-12">
+        <div>
             <div className="mb-6">
                 <h1 className="text-3xl font-extrabold text-brand-dark">Applicants</h1>
                 <p className="mt-2 text-brand-dark/60">

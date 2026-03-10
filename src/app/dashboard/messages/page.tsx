@@ -34,7 +34,7 @@ export default async function MessagesIndex() {
     const role = (session.user as any).role as "seeker" | "referrer";
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8 lg:py-12">
+        <div>
             <div className="mb-6">
                 <h1 className="text-3xl font-extrabold text-brand-dark">Messages</h1>
                 <p className="mt-2 text-brand-dark/60">

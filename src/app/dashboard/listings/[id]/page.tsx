@@ -45,7 +45,7 @@ export default async function ReferrerJobViewPage(props: { params: Promise<{ id:
     const { job, applications, seekers: seekerMap } = await res.json();
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 lg:py-12">
+        <div>
             <Link href="/dashboard" className="inline-flex items-center text-sm font-semibold text-brand-dark/60 hover:text-primary mb-8 transition-colors">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
             </Link>

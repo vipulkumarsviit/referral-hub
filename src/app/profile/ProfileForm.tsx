@@ -104,15 +104,15 @@ export default function ProfileForm() {
     };
 
     if (loading) {
-        return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>;
+        return <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>;
     }
 
-    if (!user) return <div className="p-12 text-center text-brand-dark/60">Profile not found.</div>;
+    if (!user) return <div className="py-12 text-center text-brand-dark/60">Profile not found.</div>;
 
     const isReferrer = user.role === "referrer";
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-10">
+        <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-extrabold text-brand-dark">Profile Settings</h1>
                 <p className="mt-2 text-brand-dark/60">

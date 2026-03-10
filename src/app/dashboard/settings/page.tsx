@@ -8,9 +8,5 @@ export default async function SettingsPage() {
         redirect("/login");
     }
 
-    return (
-        <div className="max-w-5xl mx-auto px-4 py-8 lg:py-12">
-            <ProfileForm />
-        </div>
-    );
+    return <ProfileForm />;
 }

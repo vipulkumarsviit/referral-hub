@@ -28,10 +28,10 @@ export default function SeekerDashboard({ userId }: { userId: string }) {
     }, []);
 
     if (loading) {
-        return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>;
+        return <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>;
     }
 
-    if (!data) return <div className="p-12">Error loading dashboard</div>;
+    if (!data) return <div className="py-12">Error loading dashboard</div>;
 
     function getStatusBadge(status: string) {
         switch (status) {
@@ -47,7 +47,7 @@ export default function SeekerDashboard({ userId }: { userId: string }) {
     }
 
     return (
-        <div className="px-6 py-8 lg:px-10 lg:py-10 max-w-7xl mx-auto">
+        <div>
             <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-brand-dark">
