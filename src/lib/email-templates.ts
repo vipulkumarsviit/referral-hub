@@ -5,7 +5,17 @@ const brand = {
   background: "#F8F7F4",
 };
 
-function layout({ title, preview, body }: { title: string; preview: string; body: string }) {
+function layout({
+  title,
+  preview,
+  body,
+  logoUrl,
+}: {
+  title: string;
+  preview: string;
+  body: string;
+  logoUrl: string;
+}) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +34,9 @@ function layout({ title, preview, body }: { title: string; preview: string; body
           <tr>
             <td style="padding:24px 28px;border-bottom:1px solid rgba(26,26,46,0.08);">
               <div style="display:flex;align-items:center;gap:12px;">
-                <div style="width:40px;height:40px;border-radius:12px;background:${brand.dark};display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;">RH</div>
+                <div style="width:40px;height:40px;border-radius:12px;background:${brand.dark};display:inline-flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <img src="${logoUrl}" alt="${brand.name} logo" width="40" height="40" style="display:block;width:40px;height:40px;object-fit:cover;" />
+                </div>
                 <div>
                   <div style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">${brand.name}</div>
                   <div style="font-size:12px;color:rgba(26,26,46,0.6);">Referrals, verified.</div>
@@ -57,7 +69,15 @@ function layout({ title, preview, body }: { title: string; preview: string; body
 </html>`;
 }
 
-export function welcomeEmail({ name, dashboardUrl }: { name?: string; dashboardUrl: string }) {
+export function welcomeEmail({
+  name,
+  dashboardUrl,
+  logoUrl,
+}: {
+  name?: string;
+  dashboardUrl: string;
+  logoUrl: string;
+}) {
   const body = `
     <h2 style="margin:0 0 8px;font-size:22px;">Welcome${name ? `, ${name}` : ""}.</h2>
     <p style="margin:0 0 16px;color:rgba(26,26,46,0.7);line-height:1.6;">
@@ -72,12 +92,19 @@ export function welcomeEmail({ name, dashboardUrl }: { name?: string; dashboardU
       title: "Welcome to ReferralHub",
       preview: "Your account is ready.",
       body,
+      logoUrl,
     }),
     text: `Welcome to ReferralHub. Go to your dashboard: ${dashboardUrl}`,
   };
 }
 
-export function resetPasswordEmail({ resetUrl }: { resetUrl: string }) {
+export function resetPasswordEmail({
+  resetUrl,
+  logoUrl,
+}: {
+  resetUrl: string;
+  logoUrl: string;
+}) {
   const body = `
     <h2 style="margin:0 0 8px;font-size:22px;">Reset your password</h2>
     <p style="margin:0 0 16px;color:rgba(26,26,46,0.7);line-height:1.6;">
@@ -93,6 +120,7 @@ export function resetPasswordEmail({ resetUrl }: { resetUrl: string }) {
       title: "Reset your ReferralHub password",
       preview: "Reset your password securely.",
       body,
+      logoUrl,
     }),
     text: `Reset your password: ${resetUrl}`,
   };

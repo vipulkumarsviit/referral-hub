@@ -87,7 +87,11 @@ export async function POST(req: Request) {
                 process.env.NEXTAUTH_URL ??
                 process.env.NEXT_PUBLIC_APP_URL ??
                 "http://localhost:3000";
-            const template = welcomeEmail({ name, dashboardUrl: `${baseUrl}/dashboard` });
+            const template = welcomeEmail({
+                name,
+                dashboardUrl: `${baseUrl}/dashboard`,
+                logoUrl: `${baseUrl}/icon.svg`,
+            });
             await sendEmail({
                 to: newUser.email,
                 subject: template.subject,

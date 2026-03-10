@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
       try {
-        const template = resetPasswordEmail({ resetUrl });
+        const template = resetPasswordEmail({ resetUrl, logoUrl: `${baseUrl}/icon.svg` });
         await sendEmail({
           to: user.email,
           subject: template.subject,
