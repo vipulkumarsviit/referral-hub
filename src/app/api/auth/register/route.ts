@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import { User } from "@/models/User";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/email-templates";
 
 function isEmailFormatValid(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -46,50 +48,32 @@ export async function POST(req: Request) {
         const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
         if (!name || !normalizedEmail || !password) {
-            return NextResponse.json(
-                { message: "Missing required fields" },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
         if (!isEmailFormatValid(normalizedEmail)) {
-            return NextResponse.json(
-                { message: "Please provide a valid email address" },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: "Please provide a valid email address" }, { status: 400 });
         }
 
         const domain = getDomainFromEmail(normalizedEmail);
         const domainIsReachable = await hasReachableDomain(domain);
         if (!domainIsReachable) {
-            return NextResponse.json(
-                { message: "Please provide a valid email address" },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: "Please provide a valid email address" }, { status: 400 });
         }
 
         if (password.length < 6) {
-            return NextResponse.json(
-                { message: "Password must be at least 6 characters" },
-                { status: 400 }
-            );
+            return NextResponse.json({ message: "Password must be at least 6 characters" }, { status: 400 });
         }
 
         await dbConnect();
 
-        // Check if user exists
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
-            return NextResponse.json(
-                { message: "Email is already registered" },
-                { status: 409 }
-            );
+            return NextResponse.json({ message: "Email is already registered" }, { status: 409 });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
         const newUser = await User.create({
             name,
             email: normalizedEmail,
@@ -97,6 +81,22 @@ export async function POST(req: Request) {
             role: role || "seeker",
             isVerified: false,
         });
+
+        try {
+            const baseUrl =
+                process.env.NEXTAUTH_URL ??
+                process.env.NEXT_PUBLIC_APP_URL ??
+                "http://localhost:3000";
+            const template = welcomeEmail({ name, dashboardUrl: `${baseUrl}/dashboard` });
+            await sendEmail({
+                to: newUser.email,
+                subject: template.subject,
+                text: template.text,
+                html: template.html,
+            });
+        } catch {
+            // Email failures should not block registration.
+        }
 
         return NextResponse.json(
             {
@@ -110,8 +110,7 @@ export async function POST(req: Request) {
             },
             { status: 201 }
         );
-    } catch (error) {
-        console.error("Registration error:", error);
+    } catch {
         return NextResponse.json(
             { message: "An error occurred during registration" },
             { status: 500 }
