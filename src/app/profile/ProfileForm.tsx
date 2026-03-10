@@ -112,108 +112,208 @@ export default function ProfileForm() {
     const isReferrer = user.role === "referrer";
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto px-4 py-10">
             <div className="mb-8">
-                <h1 className="text-3xl font-extrabold text-brand-dark">Your Profile</h1>
+                <h1 className="text-3xl font-extrabold text-brand-dark">Profile Settings</h1>
                 <p className="mt-2 text-brand-dark/60">
-                    Manage your personal details and preferences.
+                    Keep your personal info, experience, and preferences up to date.
                 </p>
             </div>
 
-            <Card className="border-brand-dark/10 shadow-sm">
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <CardTitle>Personal Information</CardTitle>
-                        {user.isVerified && isReferrer && (
-                            <span className="flex items-center gap-1 text-xs font-bold text-success bg-success-light px-2 py-1 rounded-full">
-                                <CheckCircle className="h-3 w-3" />
-                                Verified Employee
-                            </span>
-                        )}
-                    </div>
-                    <CardDescription>Update your photo and personal details here.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" name="name" defaultValue={user.name} required className="h-11" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Email <span className="text-xs text-brand-dark/40">(Cannot be changed)</span></Label>
-                            <Input value={user.email} disabled className="h-11 bg-brand-dark/5" />
-                        </div>
+            <Card className="border-none shadow-sm rounded-3xl bg-white">
+                <CardContent className="p-6 md:p-8 space-y-10">
+                    <form onSubmit={handleSubmit} className="space-y-10">
+                        {/* Personal Info */}
+                        <section className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-lg font-semibold text-brand-dark">Personal Info</h2>
+                                    <p className="text-sm text-brand-dark/60">
+                                        Basic details used across your profile.
+                                    </p>
+                                </div>
+                                {user.isVerified && isReferrer && (
+                                    <span className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-success bg-success-light px-2 py-1 rounded-full">
+                                        <CheckCircle className="h-3 w-3" />
+                                        Verified Employee
+                                    </span>
+                                )}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="jobTitle">Job Title</Label>
-                            <Input id="jobTitle" name="jobTitle" defaultValue={user.jobTitle} required className="h-11" />
-                        </div>
-
-                        {isReferrer && (
-                            <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="company">Company</Label>
-                                    <Input id="company" name="company" defaultValue={user.company} required className="h-11" />
+                                    <Label htmlFor="name">Full Name</Label>
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        defaultValue={user.name}
+                                        required
+                                        className="h-11"
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="bio">Short Bio</Label>
-                                    <Input id="bio" name="bio" defaultValue={user.bio} className="h-11" />
+                                    <Label htmlFor="jobTitle">Current Title</Label>
+                                    <Input
+                                        id="jobTitle"
+                                        name="jobTitle"
+                                        defaultValue={user.jobTitle}
+                                        required
+                                        className="h-11"
+                                    />
                                 </div>
-                            </>
-                        )}
+                            </div>
 
-                        {!isReferrer && (
-                            <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="skills">Key Skills</Label>
-                                    <Input id="skills" name="skills" defaultValue={user.skills?.join(", ")} className="h-11" />
-                                    {user.skills?.length ? (
-                                        <div className="text-xs text-brand-dark/60">Current: {user.skills.join(", ")}</div>
-                                    ) : null}
+                                    <Label>Email</Label>
+                                    <Input
+                                        value={user.email}
+                                        disabled
+                                        className="h-11 bg-brand-dark/5"
+                                    />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="preferredRole">Preferred Role</Label>
-                                        <Input id="preferredRole" name="preferredRole" defaultValue={user.preferredRole} className="h-11" />
-                                        {user.preferredRole && (
-                                            <div className="text-xs text-brand-dark/60">Current: {user.preferredRole}</div>
-                                        )}
+                                <div className="space-y-2">
+                                    <Label htmlFor="preferredLocation">Location</Label>
+                                    <Input
+                                        id="preferredLocation"
+                                        name="preferredLocation"
+                                        defaultValue={user.preferredLocation}
+                                        className="h-11"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-brand-dark/5" />
+
+                        {/* Experience */}
+                        <section className="space-y-6">
+                            <div>
+                                <h2 className="text-lg font-semibold text-brand-dark">Experience</h2>
+                                <p className="text-sm text-brand-dark/60">
+                                    Add your resume and professional links.
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="resumeUrl">Resume</Label>
+                                    <Input
+                                        id="resumeUrl"
+                                        name="resumeUrl"
+                                        type="url"
+                                        defaultValue={user.resumeUrl}
+                                        placeholder="Link to your resume (Google Drive, PDF, etc.)"
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="linkedIn">LinkedIn URL</Label>
+                                    <Input
+                                        id="linkedIn"
+                                        name="linkedIn"
+                                        type="url"
+                                        defaultValue={user.linkedIn}
+                                        placeholder="linkedin.com/in/your-profile"
+                                        className="h-11"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        <div className="h-px bg-brand-dark/5" />
+
+                        {/* Preferences */}
+                        <section className="space-y-6">
+                            <div>
+                                <h2 className="text-lg font-semibold text-brand-dark">Preferences</h2>
+                                <p className="text-sm text-brand-dark/60">
+                                    Skills and roles you’re interested in.
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label htmlFor="skills">Skills</Label>
+                                {user.skills?.length ? (
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {user.skills.map((skill: string) => (
+                                            <span
+                                                key={skill}
+                                                className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="preferredLocation">Location</Label>
-                                        <Input id="preferredLocation" name="preferredLocation" defaultValue={user.preferredLocation} className="h-11" />
-                                        {user.preferredLocation && (
-                                            <div className="text-xs text-brand-dark/60">Current: {user.preferredLocation}</div>
-                                        )}
-                                    </div>
+                                ) : null}
+                                <Input
+                                    id="skills"
+                                    name="skills"
+                                    defaultValue={user.skills?.join(", ")}
+                                    placeholder="e.g. Product Design, React, Python"
+                                    className="h-11"
+                                />
+                                <p className="text-xs text-brand-dark/50">
+                                    Separate skills with commas.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="preferredRole">Preferred Roles</Label>
+                                    <Input
+                                        id="preferredRole"
+                                        name="preferredRole"
+                                        defaultValue={user.preferredRole}
+                                        placeholder="e.g. Full-time, Senior"
+                                        className="h-11"
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="resumeUrl">Resume Link / URL</Label>
-                                    <Input id="resumeUrl" name="resumeUrl" type="url" defaultValue={user.resumeUrl} className="h-11" />
-                                    {user.resumeUrl && (
-                                        <div className="text-xs text-brand-dark/60">Current: {user.resumeUrl}</div>
-                                    )}
+                                    <Label htmlFor="preferredLocation">Preferred Locations</Label>
+                                    <Input
+                                        id="preferredLocation"
+                                        name="preferredLocation"
+                                        defaultValue={user.preferredLocation}
+                                        placeholder="e.g. Remote, New York, London"
+                                        className="h-11"
+                                    />
                                 </div>
-                            </>
-                        )}
-
-                        <div className="space-y-2">
-                            <Label htmlFor="linkedIn">LinkedIn Profile</Label>
-                            <Input id="linkedIn" name="linkedIn" type="url" defaultValue={user.linkedIn} className="h-11" />
-                            {user.linkedIn && (
-                                <div className="text-xs text-brand-dark/60">Current: {user.linkedIn}</div>
-                            )}
-                        </div>
+                            </div>
+                        </section>
 
                         {message && (
-                            <div className={`rounded-lg p-3 text-sm ${message.includes("success") ? "bg-success-light text-success" : "bg-red-50 text-red-500"}`}>
+                            <div
+                                className={`rounded-lg p-3 text-sm ${
+                                    message.includes("success")
+                                        ? "bg-success-light text-success"
+                                        : "bg-red-50 text-red-500"
+                                }`}
+                            >
                                 {message}
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full sm:w-auto h-11 font-bold mt-4" disabled={saving}>
-                            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Save Changes"}
-                        </Button>
+                        <div className="flex items-center justify-between pt-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="h-11 px-6 text-sm font-medium"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="h-11 px-8 font-bold"
+                                disabled={saving}
+                            >
+                                {saving ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    "Save Changes"
+                                )}
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>

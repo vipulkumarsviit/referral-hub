@@ -26,12 +26,19 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const navItems = [
-    { icon: Home, label: "Home", href: "/dashboard" },
-    { icon: List, label: "My Listings", href: "/dashboard/listings" },
-    { icon: Users, label: "Applicants", href: "/dashboard/applicants" },
-    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
-    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+type NavRole = "seeker" | "referrer";
+
+const navItems: {
+    icon: typeof Home;
+    label: string;
+    href: string;
+    roles: NavRole[];
+}[] = [
+    { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
+    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
+    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
+    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer"] },
 ];
 
 export default function DashboardLayout({
@@ -67,6 +74,8 @@ export default function DashboardLayout({
 
     const displayName = profile?.name || session?.user?.name || "";
     const jobTitle = profile?.jobTitle || "";
+    const role = (session?.user as any)?.role as "seeker" | "referrer" | undefined;
+    const isReferrer = role === "referrer";
     const initials = displayName
         ? displayName
               .split(" ")
@@ -93,15 +102,19 @@ export default function DashboardLayout({
                 {/* Nav */}
                 <nav className="flex flex-1 flex-col gap-1 px-3 pt-4">
                     {navItems.map((item) => {
+                        if (!role || !item.roles.includes(role === "referrer" ? "referrer" : "seeker")) {
+                            return null;
+                        }
                         const isActive = pathname === item.href;
                         return (
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive
+                                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                                    isActive
                                         ? "bg-primary/10 font-bold text-primary"
                                         : "text-brand-dark/60 hover:bg-brand-dark/5 hover:text-brand-dark"
-                                    }`}
+                                }`}
                             >
                                 <item.icon className="h-5 w-5" />
                                 {item.label}
