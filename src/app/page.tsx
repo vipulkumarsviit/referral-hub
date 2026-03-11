@@ -254,7 +254,7 @@ export default function Home() {
               most innovative companies.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/browse">
+              <Link href="/jobs">
                 <Button
                   size="lg"
                   className="rounded-xl bg-white px-8 py-4 text-base font-bold text-primary transition-all hover:bg-white/90"
