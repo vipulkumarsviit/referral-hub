@@ -14,13 +14,39 @@ const sora = Sora({
   weight: ["400", "600", "700", "800"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
   title: "ReferralHub | Get referred, not just applied",
   description:
     "Skip the ATS black hole. Get your resume directly into the hands of hiring managers through verified employees at top tech companies.",
+  metadataBase: new URL(baseUrl),
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: "ReferralHub | Get referred, not just applied",
+    description:
+      "Skip the ATS black hole. Get your resume directly into the hands of hiring managers through verified employees at top tech companies.",
+    siteName: "ReferralHub",
+    images: [
+      {
+        url: "/hero.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ReferralHub preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ReferralHub | Get referred, not just applied",
+    description:
+      "Skip the ATS black hole. Get your resume directly into the hands of hiring managers through verified employees at top tech companies.",
+    images: ["/hero.jpg"],
   },
 };
 
