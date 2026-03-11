@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Hexagon, LogIn, Loader2, ShieldCheck, Sparkles } from "lucide-react";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -124,7 +125,11 @@ export default function LoginPage() {
                                         </div>
                                     )}
 
-                                    <Button type="submit" className="w-full font-bold" disabled={loading}>
+                                    <Button
+                                        type="submit"
+                                        className="w-full rounded-xl bg-primary text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary/90"
+                                        disabled={loading}
+                                    >
                                         {loading ? (
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         ) : (
@@ -145,9 +150,15 @@ export default function LoginPage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <Button variant="outline" type="button" onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
+                                        <span className="flex h-6 w-6 items-center justify-center">
+                                            <Image src="/google.svg" alt="Google" width={20} height={20} />
+                                        </span>
                                         Google
                                     </Button>
                                     <Button variant="outline" type="button" onClick={() => signIn("linkedin", { callbackUrl: "/dashboard" })}>
+                                        <span className="flex h-6 w-6 items-center justify-center">
+                                            <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
+                                        </span>
                                         LinkedIn
                                     </Button>
                                 </div>

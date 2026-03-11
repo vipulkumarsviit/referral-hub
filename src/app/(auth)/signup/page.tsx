@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Hexagon, UserPlus, Loader2, ShieldCheck, Sparkles } from "lucide-react";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -189,6 +190,9 @@ export default function SignupPage() {
                                         disabled={role === "referrer"}
                                         onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
                                     >
+                                        <span className="flex h-6 w-6 items-center justify-center">
+                                            <Image src="/google.svg" alt="Google" width={20} height={20} />
+                                        </span>
                                         Google
                                     </Button>
                                     <Button
@@ -197,6 +201,9 @@ export default function SignupPage() {
                                         disabled={role === "referrer"}
                                         onClick={() => signIn("linkedin", { callbackUrl: "/onboarding" })}
                                     >
+                                        <span className="flex h-6 w-6 items-center justify-center">
+                                            <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
+                                        </span>
                                         LinkedIn
                                     </Button>
                                 </div>
