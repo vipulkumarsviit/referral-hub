@@ -63,7 +63,35 @@ const referrerSteps = [
   },
 ];
 
-export default function Home() {
+const fallbackCompanies = ["Google", "Stripe", "Linear", "Notion"];
+
+async function getTrustedCompanies() {
+  const baseUrl =
+    process.env.NEXTAUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000";
+
+  try {
+    const res = await fetch(`${baseUrl}/api/trusted-companies`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      return fallbackCompanies;
+    }
+    const data = (await res.json()) as { companies?: string[] };
+    if (data.companies && data.companies.length) {
+      return data.companies;
+    }
+  } catch {
+    // ignore
+  }
+
+  return fallbackCompanies;
+}
+
+export default async function Home() {
+  const trustedCompanies = await getTrustedCompanies();
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -157,7 +185,7 @@ export default function Home() {
               Trusted by employees at
             </p>
             <div className="grid grid-cols-2 items-center gap-8 opacity-60 transition-all hover:opacity-100 md:grid-cols-4 lg:gap-16">
-              {companies.map((company) => (
+              {trustedCompanies.map((company) => (
                 <div key={company} className="flex justify-center">
                   <div className="flex h-10 items-center gap-2 text-brand-dark/60">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-dark/10">
