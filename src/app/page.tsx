@@ -182,7 +182,7 @@ export default function Home() {
         </section>
 
         {/* ════════════ How It Works ════════════ */}
-        <section className="py-24 lg:py-32" id="how-it-works">
+        <section className="py-12 lg:py-16" id="how-it-works">
           <div className="mx-auto mb-20 max-w-7xl px-6 text-center">
             <h2 className="text-4xl font-extrabold text-brand-dark md:text-5xl">
               How it works
@@ -250,11 +250,11 @@ export default function Home() {
               Ready to jumpstart your career?
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg text-white/80">
-              Join 50,000+ professionals getting referred at the world&apos;s
+              Join the professionals getting referred at the world&apos;s
               most innovative companies.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link href="/jobs">
+              <Link href="/browse">
                 <Button
                   size="lg"
                   className="rounded-xl bg-white px-8 py-4 text-base font-bold text-primary transition-all hover:bg-white/90"
@@ -269,6 +269,26 @@ export default function Home() {
               >
                 Contact Sales
               </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════ Feedback CTA ════════════ */}
+        <section className="border-y border-brand-dark/5 bg-white/50 px-6 py-16">
+          <div className="mx-auto max-w-7xl text-center">
+            <p className="mb-6 text-sm font-bold uppercase tracking-[0.2em] text-brand-dark/40">
+              We’re still improving
+            </p>
+            <h3 className="text-3xl font-extrabold text-brand-dark md:text-4xl">
+              Your feedback is valuable to us.
+            </h3>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-brand-dark/60">
+              Help shape ReferralHub by reporting issues or suggesting features you want next.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Link href="/feedback">
+                <Button className="rounded-xl px-7 font-bold">Share feedback</Button>
+              </Link>
             </div>
           </div>
         </section>

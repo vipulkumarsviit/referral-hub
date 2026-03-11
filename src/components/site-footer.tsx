@@ -3,6 +3,7 @@ import { Hexagon, AtSign, Share2, ArrowRight } from "lucide-react";
 
 const footerLinks = [
     { label: "About", href: "/about" },
+    { label: "Feedback", href: "/feedback" },
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
 ];
@@ -32,7 +33,7 @@ export function SiteFooter() {
 
                         <div className="flex flex-wrap gap-3">
                             <Link
-                                href="/jobs"
+                                href="/browse"
                                 className="inline-flex items-center gap-2 rounded-full border border-brand-dark/10 px-4 py-2 text-xs font-semibold text-brand-dark transition-colors hover:border-primary hover:text-primary"
                             >
                                 Browse referrals <ArrowRight className="h-3.5 w-3.5" />

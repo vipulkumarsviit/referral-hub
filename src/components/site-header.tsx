@@ -8,9 +8,9 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 
 const navLinks = [
-    { label: "How it works", href: "#how-it-works" },
+    { label: "How it works", href: "/#how-it-works" },
     { label: "Browse", href: "/jobs" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "About", href: "/about" },
 ];
 
 export function SiteHeader() {

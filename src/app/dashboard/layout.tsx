@@ -39,6 +39,7 @@ import {
   Globe,
   Gauge,
   ChevronRight,
+  Flag,
 } from "lucide-react";
 
 type NavRole = "seeker" | "referrer";
@@ -51,6 +52,7 @@ const navItems: {
   roles: SidebarRole[];
 }[] = [
     { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
+    { icon: Flag, label: "Feedback", href: "/dashboard/admin/feedback", roles: ["admin"] },
     { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
     { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
     { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
@@ -151,12 +153,14 @@ export default function DashboardLayout({
     <SidebarProvider className="h-screen overflow-hidden">
       <Sidebar className="border-brand-dark/5 bg-white">
         <SidebarHeader className="px-4 py-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-dark text-white">
-              <Hexagon className="h-4 w-4" />
+          <Link href="/">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-dark text-white">
+                <Hexagon className="h-4 w-4" />
+              </div>
+              <span className="text-lg font-bold tracking-tight text-brand-dark">Referrer.</span>
             </div>
-            <span className="text-lg font-bold tracking-tight text-brand-dark">Referrer.</span>
-          </div>
+          </Link>
         </SidebarHeader>
 
         <SidebarContent className="px-3 pt-2">
