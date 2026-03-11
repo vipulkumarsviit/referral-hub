@@ -104,36 +104,6 @@ export default function OnboardingForm({ role }: { role: string }) {
                             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(step / 3) * 100}%` }} />
                         </div>
 
-                        <div className="rounded-2xl border border-brand-dark/10 bg-brand-dark/5 p-3">
-                            {step === 1 && (
-                                <Image
-                                    src="/stitch/5265646510576057629/50538d5f52e14751a790a69eec52cb19/screenshot.png"
-                                    alt="Profile Builder Step 1"
-                                    width={960}
-                                    height={768}
-                                    className="w-full h-auto rounded-xl"
-                                />
-                            )}
-                            {step === 2 && (
-                                <Image
-                                    src="/stitch/5265646510576057629/ab779b2d12414be89c2c15b11ed11bb2/screenshot.png"
-                                    alt="Profile Builder Step 2"
-                                    width={960}
-                                    height={768}
-                                    className="w-full h-auto rounded-xl"
-                                />
-                            )}
-                            {step === 3 && (
-                                <Image
-                                    src="/stitch/5265646510576057629/512358307ddc4765af1784ca9dd0c5ae/screenshot.png"
-                                    alt="Profile Builder Step 3"
-                                    width={960}
-                                    height={768}
-                                    className="w-full h-auto rounded-xl"
-                                />
-                            )}
-                        </div>
-
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {step === 1 && (
                                 <>
