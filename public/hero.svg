@@ -1,0 +1,54 @@
+<svg width="1024" height="800" viewBox="0 0 1024 800" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="1024" height="800" fill="#F8F9FC"/>
+
+  <!-- Job Card -->
+  <rect x="120" y="250" width="300" height="220" rx="18" fill="white" stroke="#E5E7EB"/>
+  
+  <circle cx="160" cy="300" r="14" fill="#6366F1"/>
+  
+  <rect x="190" y="285" width="180" height="14" rx="7" fill="#E5E7EB"/>
+  <rect x="190" y="315" width="140" height="12" rx="6" fill="#E5E7EB"/>
+  
+  <rect x="160" y="360" width="120" height="36" rx="10" fill="#6366F1"/>
+  <text x="220" y="383" font-size="14" text-anchor="middle" fill="white" font-family="Inter, sans-serif">
+    Post Job
+  </text>
+
+  <!-- Arrow -->
+  <path d="M430 360 L510 360" stroke="#CBD5F5" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="510,350 510,370 530,360" fill="#CBD5F5"/>
+
+  <!-- Request Card -->
+  <rect x="540" y="200" width="300" height="200" rx="18" fill="white" stroke="#E5E7EB"/>
+
+  <circle cx="580" cy="250" r="12" fill="#A5B4FC"/>
+
+  <rect x="610" y="240" width="180" height="12" rx="6" fill="#E5E7EB"/>
+  <rect x="610" y="265" width="140" height="10" rx="5" fill="#E5E7EB"/>
+
+  <rect x="580" y="300" width="140" height="34" rx="10" fill="#EEF2FF"/>
+  <text x="650" y="322" font-size="13" text-anchor="middle" fill="#6366F1" font-family="Inter, sans-serif">
+    Request Referral
+  </text>
+
+  <!-- Arrow -->
+  <path d="M680 420 L680 480" stroke="#CBD5F5" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="670,480 690,480 680,500" fill="#CBD5F5"/>
+
+  <!-- Accepted Card -->
+  <rect x="540" y="520" width="260" height="120" rx="18" fill="white" stroke="#E5E7EB"/>
+
+  <circle cx="580" cy="580" r="16" fill="#22C55E"/>
+
+  <path d="M572 580 L578 586 L590 572" stroke="white" stroke-width="3" fill="none"/>
+
+  <text x="620" y="575" font-size="16" fill="#111827" font-family="Inter, sans-serif">
+    Referral Accepted
+  </text>
+
+  <text x="620" y="600" font-size="12" fill="#6B7280" font-family="Inter, sans-serif">
+    Interview scheduled
+  </text>
+
+</svg>

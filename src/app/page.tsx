@@ -120,23 +120,17 @@ export default function Home() {
 
               {/* Hero visual */}
               <div className="relative lg:ml-10">
-                <div className="aspect-square w-full rounded-3xl bg-gradient-to-br from-primary/20 to-brand-dark/5 p-4 ring-1 ring-brand-dark/5">
+                <div className="aspect-[1024/800] w-full rounded-3xl bg-gradient-to-br from-primary/20 to-brand-dark/5 p-4 ring-1 ring-brand-dark/5">
                   <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white shadow-2xl">
                     <div className="h-full w-full overflow-hidden rounded-2xl">
-                      <Image
-                        src="/hero-img.webp"
-                        alt="ReferralHub hero"
-                        width={900}
-                        height={900}
-                        className="h-full w-full object-cover"
-                        priority
-                      />
+                      {/* <img src="/hero.svg" alt="Referral workflow" className="h-full w-full object-contain" /> */}
+                      <Image src="/hero.svg" alt="Referral workflow" width={1024} height={800} className="h-full w-full object-contain" />
                     </div>
                   </div>
                 </div>
 
                 {/* Floating notification card */}
-                <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-brand-dark/5 bg-white p-6 shadow-2xl md:block">
+                {/* <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-brand-dark/5 bg-white p-6 shadow-2xl md:block">
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-light text-success">
                       <CheckCircle className="h-6 w-6" />
@@ -150,7 +144,7 @@ export default function Home() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
