@@ -2,10 +2,9 @@ import Link from "next/link";
 import { Hexagon, AtSign, Share2, ArrowRight } from "lucide-react";
 
 const footerLinks = [
-    { label: "About", href: "#" },
-    { label: "Privacy", href: "#" },
-    { label: "Terms", href: "#" },
-    { label: "Careers", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
 ];
 
 const socialLinks = [
@@ -76,7 +75,7 @@ export function SiteFooter() {
                 </div>
 
                 <div className="mt-10 flex flex-col gap-2 border-t border-brand-dark/5 pt-6 text-xs text-brand-dark/40 sm:flex-row sm:items-center sm:justify-between">
-                    <span>© {new Date().getFullYear()} ReferralHub Inc.</span>
+                    <span>© {new Date().getFullYear()} ReferralHub.</span>
                     <span>Built for the modern job seeker.</span>
                 </div>
             </div>
