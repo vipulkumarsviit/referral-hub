@@ -55,7 +55,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                                     <h2 className="text-xl font-bold text-brand-dark leading-tight">{job.company}</h2>
                                     {referrer && (
                                         <p className="text-sm font-medium text-brand-dark/60">
-                                            Referral via {ReferralHubname} {ReferralHubisVerified && <span className="text-success ml-1">✓</span>}
+                                            Referral via {referrer.name} {referrer.isVerified && <span className="text-success ml-1">✓</span>}
                                         </p>
                                     )}
                                 </div>
