@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+
 type EmailPayload = {
   to: string;
   subject: string;
@@ -15,6 +15,7 @@ async function getTransport() {
   if (!user || !pass) return null;
 
   try {
+    const nodemailer = require("nodemailer");
     return nodemailer.createTransport({
       host,
       port,
