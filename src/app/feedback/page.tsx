@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -9,16 +9,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bug, Lightbulb, ShieldCheck, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function FeedbackPage() {
   const [type, setType] = useState<"issue" | "feature">("issue");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const { data: session } = useSession();
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; text: string }>({
     kind: "idle",
     text: "",
   });
   const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    if (!email && session?.user?.email) {
+      setEmail(session.user.email);
+    }
+  }, [email, session]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
