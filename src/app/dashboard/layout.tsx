@@ -158,7 +158,7 @@ export default function DashboardLayout({
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-dark text-white">
                 <Hexagon className="h-4 w-4" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-brand-dark">Referrer.</span>
+              <span className="text-lg font-bold tracking-tight text-brand-dark">ReferralHub</span>
             </div>
           </Link>
         </SidebarHeader>
@@ -228,7 +228,7 @@ export default function DashboardLayout({
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-dark text-white">
                 <Hexagon className="h-4 w-4" />
               </div>
-              <span className="font-bold text-brand-dark">Referrer.</span>
+              <span className="font-bold text-brand-dark">ReferralHub</span>
             </div>
           </div>
 

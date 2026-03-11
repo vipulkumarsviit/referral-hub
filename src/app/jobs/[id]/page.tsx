@@ -55,7 +55,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                                     <h2 className="text-xl font-bold text-brand-dark leading-tight">{job.company}</h2>
                                     {referrer && (
                                         <p className="text-sm font-medium text-brand-dark/60">
-                                            Referral via {referrer.name} {referrer.isVerified && <span className="text-success ml-1">✓</span>}
+                                            Referral via {ReferralHubname} {ReferralHubisVerified && <span className="text-success ml-1">✓</span>}
                                         </p>
                                     )}
                                 </div>
@@ -110,7 +110,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                     <div className="bg-brand-dark rounded-3xl p-8 text-white mt-12 flex flex-col md:flex-row shadow-2xl items-center justify-between gap-6">
                         <div>
                             <h3 className="text-2xl font-bold mb-2">Ready to apply?</h3>
-                            <p className="text-white/60">Your resume profile will be shared directly with the referrer.</p>
+                            <p className="text-white/60">Your resume profile will be shared directly with the ReferralHub</p>
 
                         </div>
                         {hasApplied ? (
