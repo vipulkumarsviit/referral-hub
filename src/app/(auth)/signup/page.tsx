@@ -163,7 +163,7 @@ export default function SignupPage() {
                                         </div>
                                     )}
 
-                                    <Button type="submit" className="h-11 w-full font-bold" disabled={loading}>
+                                    <Button type="submit" className="w-full font-bold" disabled={loading}>
                                         {loading ? (
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         ) : (

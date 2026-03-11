@@ -61,7 +61,8 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
                 <Button
                     onClick={() => router.push("/dashboard/settings?missing=resume")}
                     variant="outline"
-                    className="w-full sm:w-auto h-10 font-semibold"
+                    size="sm"
+                    className="w-full sm:w-auto font-semibold"
                 >
                     Complete Profile
                 </Button>
@@ -75,7 +76,7 @@ export default function ApplyButton({ jobId }: { jobId: string }) {
                 <Button
                     onClick={handleApply}
                     disabled={loading}
-                    className="w-full sm:w-auto h-14 px-8 text-lg font-bold rounded-xl shadow-xl shadow-primary/25 bg-primary text-white hover:bg-primary/90 transition-all"
+                    className="w-full sm:w-auto px-8 text-base font-bold rounded-xl shadow-xl shadow-primary/25 bg-primary text-white hover:bg-primary/90 transition-all"
                 >
                     {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Request Referral"}
                 </Button>

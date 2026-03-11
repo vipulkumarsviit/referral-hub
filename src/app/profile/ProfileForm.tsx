@@ -383,7 +383,7 @@ export default function ProfileForm() {
             )}
 
             <div className="flex items-center justify-end pt-2">
-              <Button type="submit" className="h-11 px-8 font-bold" disabled={saving}>
+              <Button type="submit" className="px-8 font-bold" disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Save Changes"}
               </Button>
             </div>

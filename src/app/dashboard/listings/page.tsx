@@ -50,7 +50,7 @@ export default async function MyListingsPage() {
                     </p>
                 </div>
                 <Link href="/dashboard/listings/new">
-                    <Button className="h-11 px-6 font-bold">Post New Referral</Button>
+                    <Button className="px-6 font-bold">Post New Referral</Button>
                 </Link>
             </div>
 
@@ -90,7 +90,7 @@ export default async function MyListingsPage() {
                                         <span className="text-sm text-brand-dark/60">Applicants</span>
                                     </div>
                                     <Link href={`/dashboard/listings/${String(job._id)}`}>
-                                        <Button variant="outline" className="h-10 font-semibold">
+                                        <Button variant="outline" size="sm" className="font-semibold">
                                             View Applicants
                                         </Button>
                                     </Link>

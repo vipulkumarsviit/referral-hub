@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                   )}
                   {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">{error}</div>}
 
-                  <Button type="submit" className="h-11 w-full font-bold" disabled={loading}>
+                  <Button type="submit" className="w-full font-bold" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                     Send reset link
                   </Button>

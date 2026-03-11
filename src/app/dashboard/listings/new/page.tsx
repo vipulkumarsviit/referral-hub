@@ -121,7 +121,7 @@ export default function NewListingPage() {
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full h-11 font-bold mt-4" disabled={loading}>
+                        <Button type="submit" className="w-full font-bold mt-4" disabled={loading}>
                             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Post Listing"}
                         </Button>
                     </form>

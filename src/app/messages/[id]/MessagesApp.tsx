@@ -182,9 +182,14 @@ export default function MessagesApp({
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-1 h-12 bg-brand-dark/5 border-none focus-visible:ring-1 focus-visible:ring-primary"
+                        className="flex-1 h-11 bg-brand-dark/5 border-none focus-visible:ring-1 focus-visible:ring-primary"
                     />
-                    <Button type="submit" disabled={sending || !content.trim()} className="h-12 w-12 rounded-xl bg-primary text-white">
+                    <Button
+                        type="submit"
+                        size="icon"
+                        disabled={sending || !content.trim()}
+                        className="rounded-xl bg-primary text-white"
+                    >
                         {sending ? <Loader2 className="animate-spin h-5 w-5" /> : <Send className="h-5 w-5 ml-1" />}
                     </Button>
                 </form>

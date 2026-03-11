@@ -100,7 +100,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                             <span className="text-sm font-semibold">Add a resume link to complete your profile.</span>
                             </div>
                             <Link href="/dashboard/settings?missing=resume">
-                                <Button variant="outline" className="h-9 bg-white text-yellow-900 border-yellow-300">
+                                <Button variant="outline" size="sm" className="bg-white text-yellow-900 border-yellow-300">
                                     Complete Profile
                                 </Button>
                             </Link>
@@ -114,7 +114,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
 
                         </div>
                         {hasApplied ? (
-                            <Button disabled className="h-14 px-8 text-lg font-bold rounded-xl bg-white/20 text-white cursor-not-allowed">
+                            <Button disabled className="px-8 text-base font-bold rounded-xl bg-white/20 text-white cursor-not-allowed">
                                 Already Applied
                             </Button>
                         ) : (

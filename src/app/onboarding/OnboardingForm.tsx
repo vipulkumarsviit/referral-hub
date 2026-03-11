@@ -213,7 +213,6 @@ export default function OnboardingForm({ role }: { role: string }) {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="h-11"
                                     disabled={loading || step === 1}
                                     onClick={() => setStep((s) => Math.max(1, s - 1))}
                                 >
@@ -222,14 +221,14 @@ export default function OnboardingForm({ role }: { role: string }) {
                                 {step < 3 ? (
                                     <Button
                                         type="button"
-                                        className="h-11 px-6 font-bold"
+                                        className="px-6 font-bold"
                                         disabled={loading || (step === 1 && (!form.name || !form.jobTitle))}
                                         onClick={() => setStep((s) => Math.min(3, s + 1))}
                                     >
                                         Next <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 ) : (
-                                    <Button type="submit" className="h-11 px-6 font-bold" disabled={loading}>
+                                    <Button type="submit" className="px-6 font-bold" disabled={loading}>
                                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Complete Profile"}
                                     </Button>
                                 )}
@@ -258,7 +257,7 @@ export default function OnboardingForm({ role }: { role: string }) {
 
                         {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">{error}</div>}
 
-                        <Button type="submit" className="w-full h-11 font-bold mt-2" disabled={loading}>
+                        <Button type="submit" className="w-full font-bold mt-2" disabled={loading}>
                             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Complete Profile"}
                             {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
                         </Button>
