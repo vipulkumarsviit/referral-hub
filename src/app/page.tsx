@@ -15,6 +15,7 @@ import {
   Award,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 /* ─── Company logos (placeholder SVGs) ─── */
 const companies = ["Google", "Stripe", "Linear", "Notion"];
@@ -121,16 +122,15 @@ export default function Home() {
               <div className="relative lg:ml-10">
                 <div className="aspect-square w-full rounded-3xl bg-gradient-to-br from-primary/20 to-brand-dark/5 p-4 ring-1 ring-brand-dark/5">
                   <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white shadow-2xl">
-                    <div className="flex flex-col items-center gap-4 p-8 text-center">
-                      <div className="rounded-2xl bg-primary/10 p-6">
-                        <Users className="h-16 w-16 text-primary" />
-                      </div>
-                      <p className="text-lg font-bold text-brand-dark">
-                        Connecting talent with opportunity
-                      </p>
-                      <p className="text-sm text-brand-dark/60">
-                        50,000+ referrals processed
-                      </p>
+                    <div className="h-full w-full overflow-hidden rounded-2xl">
+                      <Image
+                        src="/hero-img.webp"
+                        alt="ReferralHub hero"
+                        width={900}
+                        height={900}
+                        className="h-full w-full object-cover"
+                        priority
+                      />
                     </div>
                   </div>
                 </div>
