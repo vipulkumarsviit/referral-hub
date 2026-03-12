@@ -38,6 +38,8 @@ export default async function AdminDashboardPage() {
 
   const {
     totalUsers,
+    totalReferrers,
+    totalSeekers,
     activeListings,
     totalApplications,
     acceptedApplications,
@@ -47,6 +49,8 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     { label: "Total Users", value: totalUsers, icon: Users },
+    { label: "Job Seekers", value: totalSeekers, icon: Users },
+    { label: "Referrers", value: totalReferrers, icon: Users },
     { label: "Active Listings", value: activeListings, icon: Briefcase },
     { label: "Total Applications", value: totalApplications, icon: FileText },
     { label: "Referrals Accepted", value: acceptedApplications, icon: CheckCircle },
@@ -59,7 +63,7 @@ export default async function AdminDashboardPage() {
         <p className="mt-2 text-brand-dark/60">Platform metrics and recent activity overview.</p>
       </div>
 
-      <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat, i) => (
           <Card key={i} className="border-brand-dark/5 shadow-sm">
             <CardContent className="flex items-center gap-4 p-6">
