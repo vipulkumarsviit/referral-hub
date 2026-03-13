@@ -80,14 +80,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     name: user.name || email.split("@")[0],
                     email,
                     image: user.image,
-                    role: "seeker",
+                    role: "user",
                     isVerified: true,
                 });
             } else {
-                // OAuth is only allowed for job seekers.
-                if (existingUser.role === "referrer") {
-                    return false;
-                }
 
                 let shouldSave = false;
                 if (!existingUser.image && user.image) {
@@ -136,7 +132,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (session.user) {
                 session.user.id = token.id as string;
                 (session.user as unknown as { role?: UserRole }).role =
-                    (token.role as UserRole | undefined) || "seeker";
+                    (token.role as UserRole | undefined) || "user";
             }
             return session;
         },

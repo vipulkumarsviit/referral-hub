@@ -31,14 +31,13 @@ export default async function MessagesIndex() {
     }
 
     const { items } = await res.json();
-    const role = (session.user as any).role as "seeker" | "referrer";
 
     return (
         <div>
             <div className="mb-6">
                 <h1 className="text-3xl font-extrabold text-brand-dark">Messages</h1>
                 <p className="mt-2 text-brand-dark/60">
-                    Conversations with your {role === "referrer" ? "applicants" : "referrers"}.
+                    Your conversations with applicants and referrers.
                 </p>
             </div>
             <ConversationsSplit items={items} />

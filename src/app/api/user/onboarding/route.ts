@@ -14,7 +14,6 @@ export async function POST(req: Request) {
         await dbConnect();
 
         const updateData: Record<string, any> = {};
-        const isReferrer = (session.user as any).role === "referrer";
 
         const setIfDefined = (key: string, value: any) => {
             if (value !== undefined) {
@@ -22,28 +21,24 @@ export async function POST(req: Request) {
             }
         };
 
-        if (isReferrer) {
-            setIfDefined("company", data.company);
-            setIfDefined("jobTitle", data.jobTitle);
-            setIfDefined("linkedIn", data.linkedIn);
-            setIfDefined("bio", data.bio);
-        } else {
-            setIfDefined("jobTitle", data.jobTitle);
-            if (data.skills !== undefined) {
-                setIfDefined(
-                    "skills",
-                    Array.isArray(data.skills)
-                        ? data.skills
-                        : String(data.skills)
-                            .split(",")
-                            .map((skill: string) => skill.trim())
-                            .filter(Boolean)
-                );
-            }
-            setIfDefined("linkedIn", data.linkedIn);
-            setIfDefined("preferredRole", data.preferredRole);
-            setIfDefined("preferredLocation", data.preferredLocation);
-            setIfDefined("resumeUrl", data.resumeUrl);
+        // All profile fields are accepted regardless of role
+        setIfDefined("company", data.company);
+        setIfDefined("jobTitle", data.jobTitle);
+        setIfDefined("linkedIn", data.linkedIn);
+        setIfDefined("bio", data.bio);
+        setIfDefined("preferredRole", data.preferredRole);
+        setIfDefined("preferredLocation", data.preferredLocation);
+        setIfDefined("resumeUrl", data.resumeUrl);
+        if (data.skills !== undefined) {
+            setIfDefined(
+                "skills",
+                Array.isArray(data.skills)
+                    ? data.skills
+                    : String(data.skills)
+                        .split(",")
+                        .map((skill: string) => skill.trim())
+                        .filter(Boolean)
+            );
         }
 
         if (Object.keys(updateData).length > 0) {

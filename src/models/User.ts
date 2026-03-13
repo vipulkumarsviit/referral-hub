@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export type UserRole = "seeker" | "referrer" | "admin";
+export type UserRole = "user" | "admin";
 
 export interface IUser extends mongoose.Document {
     name: string;
@@ -47,9 +47,9 @@ const UserSchema = new mongoose.Schema<IUser>(
         },
         role: {
             type: String,
-            enum: ["seeker", "referrer", "admin"],
+            enum: ["user", "admin"],
             required: true,
-            default: "seeker",
+            default: "user",
         },
         image: {
             type: String,

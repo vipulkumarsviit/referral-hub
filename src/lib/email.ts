@@ -28,18 +28,28 @@ async function getTransport() {
 }
 
 export async function sendEmail(payload: EmailPayload) {
+  // Always log the email to console for local testing / debugging
+  console.log("\n📧 ── EMAIL ──────────────────────────────────────");
+  console.log(`  To:      ${payload.to}`);
+  console.log(`  Subject: ${payload.subject}`);
+  console.log(`  Body:\n${payload.html}`);
+  console.log("──────────────────────────────────────────────────\n");
+
   const transport = await getTransport();
-  if (!transport) return { skipped: true } as const;
+  if (!transport) {
+    console.log("  ⏭  SMTP not configured — email NOT sent (logged above)");
+    return { skipped: true } as const;
+  }
 
   const from = process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@referralhub.com";
 
-  await transport.sendMail({
+  /* await transport.sendMail({
     from,
     to: payload.to,
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
-  });
+  }); */
 
   return { skipped: false } as const;
 }

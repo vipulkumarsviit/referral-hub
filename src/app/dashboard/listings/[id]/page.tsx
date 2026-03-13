@@ -13,7 +13,8 @@ export default async function ReferrerJobViewPage(props: { params: Promise<{ id:
         redirect("/login");
     }
 
-    if ((session.user as any).role !== "referrer") {
+    const role = (session.user as { role?: "user" | "admin" })?.role;
+    if (role !== "user" && role !== "admin") {
         redirect("/dashboard");
     }
 

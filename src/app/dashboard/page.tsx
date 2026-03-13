@@ -9,7 +9,7 @@ export default async function DashboardRoot() {
         redirect("/login");
     }
 
-    const role = (session.user as { role?: "seeker" | "referrer" | "admin" })?.role;
+    const role = (session.user as { role?: "user" | "admin" })?.role;
 
     if (role === "admin") {
         redirect("/dashboard/admin");

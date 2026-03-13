@@ -35,9 +35,8 @@ export async function GET(req: Request) {
       }
     );
 
-    const step = user.role === "referrer" ? 2 : 4;
     return NextResponse.redirect(
-      `${baseUrl}/onboarding?verify=email&status=success&step=${step}`
+      `${baseUrl}/onboarding?verify=email&status=success&step=4`
     );
   } catch {
     return NextResponse.redirect(`${baseUrl}/onboarding?verify=email&status=error&step=4`);

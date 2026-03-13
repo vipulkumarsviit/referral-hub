@@ -32,20 +32,16 @@ export async function PUT(req: Request) {
 
         const body = await req.json();
         await dbConnect();
-        const currentUser = await User.findById(session.user.id).select("role workEmail");
+        const currentUser = await User.findById(session.user.id).select("workEmail");
         if (!currentUser) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        const role = currentUser.role as "seeker" | "referrer" | "admin";
-
-        const commonFields = ["name", "jobTitle", "bio", "image", "company", "workEmail"] as const;
-        const seekerOnlyFields = ["linkedIn", "resumeUrl", "skills", "preferredRole", "preferredLocation"] as const;
-
-        const allowedFields = new Set<string>([...commonFields]);
-        if (role === "seeker" || role === "referrer") {
-            seekerOnlyFields.forEach((f) => allowedFields.add(f));
-        }
+        // All profile fields are available to every user
+        const allowedFields = new Set<string>([
+            "name", "jobTitle", "bio", "image", "company", "workEmail",
+            "linkedIn", "resumeUrl", "skills", "preferredRole", "preferredLocation",
+        ]);
 
         // Build a sanitized payload
         const data: Record<string, unknown> = {};

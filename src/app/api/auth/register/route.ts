@@ -44,7 +44,7 @@ async function hasReachableDomain(domain: string) {
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, role } = await req.json();
+        const { name, email, password } = await req.json();
         const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
         if (!name || !normalizedEmail || !password) {
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
             name,
             email: normalizedEmail,
             password: hashedPassword,
-            role: role || "seeker",
+            role: "user",
             isVerified: false,
         });
 

@@ -12,7 +12,7 @@ export default async function AdminDashboardPage() {
     redirect("/login");
   }
 
-  const role = (session.user as { role?: "seeker" | "referrer" | "admin" })?.role;
+  const role = (session.user as { role?: "user" | "admin" })?.role;
   if (role !== "admin") {
     redirect("/dashboard");
   }
@@ -97,7 +97,7 @@ export default async function AdminDashboardPage() {
                   </div>
                   <Badge
                     variant="secondary"
-                    className={`${user.role === "referrer" ? "bg-primary/10 text-primary" : "bg-brand-dark/5 text-brand-dark"} border-none font-bold capitalize`}
+                    className={`${user.role === "admin" ? "bg-primary/10 text-primary" : "bg-brand-dark/5 text-brand-dark"} border-none font-bold capitalize`}
                   >
                     {user.role}
                   </Badge>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Hexagon, UserPlus, Loader2, ShieldCheck, Sparkles } from "lucide-react";
+import { Hexagon, UserPlus, Loader2, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,6 @@ export default function SignupPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [role, setRole] = useState<"seeker" | "referrer">("seeker");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -31,7 +30,7 @@ export default function SignupPage() {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password, role }),
+                body: JSON.stringify({ name, email, password }),
             });
 
             if (!res.ok) {
@@ -88,69 +87,31 @@ export default function SignupPage() {
                                     Join the platform where verified employees connect great talent with opportunity.
                                 </p>
                             </div>
-
-                            <div className="flex items-center gap-3 text-sm text-brand-dark/60">
-                                <Sparkles className="h-4 w-4 text-primary" />
-                                Set your role once and tailor the experience instantly.
-                            </div>
                         </div>
 
                         <Card className="border-brand-dark/10 bg-white/90 shadow-2xl shadow-brand-dark/10 backdrop-blur">
                             <CardContent className="p-8">
                                 <div className="mb-6 space-y-2">
                                     <h2 className="text-2xl font-bold text-brand-dark">Sign up</h2>
-                                    <p className="text-sm text-brand-dark/60">Enter your details and select your path.</p>
+                                    <p className="text-sm text-brand-dark/60">Enter your details to get started.</p>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label>I want to...</Label>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => setRole("seeker")}
-                                                className={`flex h-11 items-center justify-center rounded-xl border-2 text-sm font-bold transition-all ${
-                                                    role === "seeker"
-                                                        ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-brand-dark/10 text-brand-dark/60 hover:bg-brand-dark/5 hover:text-brand-dark"
-                                                }`}
-                                            >
-                                                Find a job
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setRole("referrer")}
-                                                className={`flex h-11 items-center justify-center rounded-xl border-2 text-sm font-bold transition-all ${
-                                                    role === "referrer"
-                                                        ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-brand-dark/10 text-brand-dark/60 hover:bg-brand-dark/5 hover:text-brand-dark"
-                                                }`}
-                                            >
-                                                Refer someone
-                                            </button>
-                                        </div>
-                                    </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="name">Full name</Label>
                                         <Input id="name" name="name" placeholder="John Doe" required className="h-11" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">{role === "referrer" ? "Work email" : "Email address"}</Label>
+                                        <Label htmlFor="email">Email address</Label>
                                         <Input
                                             id="email"
                                             name="email"
                                             type="email"
-                                            placeholder={role === "referrer" ? "name@company.com" : "name@example.com"}
+                                            placeholder="name@example.com"
                                             required
                                             className="h-11"
                                         />
-                                        {role === "referrer" && (
-                                            <p className="text-xs text-brand-dark/50">
-                                                You&apos;ll need to verify this email to get the Verified Badge.
-                                            </p>
-                                        )}
                                     </div>
 
                                     <div className="space-y-2">
@@ -187,7 +148,6 @@ export default function SignupPage() {
                                     <Button
                                         variant="outline"
                                         type="button"
-                                        disabled={role === "referrer"}
                                         onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
                                     >
                                         <span className="flex h-6 w-6 items-center justify-center">
@@ -198,7 +158,6 @@ export default function SignupPage() {
                                     <Button
                                         variant="outline"
                                         type="button"
-                                        disabled={role === "referrer"}
                                         onClick={() => signIn("linkedin", { callbackUrl: "/onboarding" })}
                                     >
                                         <span className="flex h-6 w-6 items-center justify-center">
@@ -207,11 +166,6 @@ export default function SignupPage() {
                                         LinkedIn
                                     </Button>
                                 </div>
-                                {role === "referrer" && (
-                                    <p className="mt-2 text-xs text-brand-dark/50">
-                                        Social sign-in is available only for job seekers.
-                                    </p>
-                                )}
 
                                 <p className="mt-6 text-center text-sm text-brand-dark/60">
                                     Already have an account?{" "}

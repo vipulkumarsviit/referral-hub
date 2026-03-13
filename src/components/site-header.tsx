@@ -28,7 +28,7 @@ export function SiteHeader() {
     type Profile = { name?: string; jobTitle?: string };
     const [profile, setProfile] = useState<Profile | null>(null);
     const dashboardHref =
-        (session?.user as { role?: "seeker" | "referrer" | "admin" } | undefined)?.role === "admin"
+        (session?.user as { role?: "user" | "admin" } | undefined)?.role === "admin"
             ? "/dashboard/admin"
             : "/dashboard";
     const displayName = profile?.name || session?.user?.name || "";

@@ -42,8 +42,7 @@ import {
   Flag,
 } from "lucide-react";
 
-type NavRole = "seeker" | "referrer";
-type SidebarRole = NavRole | "admin";
+type SidebarRole = "user" | "admin";
 
 const navItems: {
   icon: typeof Home;
@@ -53,11 +52,11 @@ const navItems: {
 }[] = [
     { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
     { icon: Flag, label: "Feedback", href: "/dashboard/admin/feedback", roles: ["admin"] },
-    { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
-    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer", "seeker"] },
-    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer", "seeker"] },
-    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
-    { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer", "admin"] },
+    { icon: Home, label: "Home", href: "/dashboard", roles: ["user"] },
+    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["user"] },
+    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["user"] },
+    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["user"] },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["user", "admin"] },
   ];
 
 export default function DashboardLayout({

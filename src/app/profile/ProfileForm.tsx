@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-type UserRole = "seeker" | "referrer" | "admin";
+type UserRole = "user" | "admin";
 
 type ProfileUser = {
   _id?: string;
@@ -90,8 +90,6 @@ export default function ProfileForm() {
   }, [searchParams]);
 
   const role = user?.role;
-  const isSeeker = role === "seeker";
-  const isReferrer = role === "referrer";
   const isAdmin = role === "admin";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,7 +110,7 @@ export default function ProfileForm() {
       workEmail: trimOrEmpty(formData.get("workEmail")),
     };
 
-    if (isSeeker || isReferrer) {
+    if (!isAdmin) {
       const resumeUrl = trimOrEmpty(formData.get("resumeUrl"));
       const linkedIn = trimOrEmpty(formData.get("linkedIn"));
 
