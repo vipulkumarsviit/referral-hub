@@ -13,25 +13,42 @@ export async function POST(req: Request) {
         const data = await req.json();
         await dbConnect();
 
-        const updateData: any = {};
+        const updateData: Record<string, any> = {};
         const isReferrer = (session.user as any).role === "referrer";
 
+        const setIfDefined = (key: string, value: any) => {
+            if (value !== undefined) {
+                updateData[key] = value;
+            }
+        };
+
         if (isReferrer) {
-            updateData.company = data.company;
-            updateData.jobTitle = data.jobTitle;
-            updateData.linkedIn = data.linkedIn;
-            updateData.bio = data.bio;
-            updateData.isVerified = true; // Auto-verify for MVP
+            setIfDefined("company", data.company);
+            setIfDefined("jobTitle", data.jobTitle);
+            setIfDefined("linkedIn", data.linkedIn);
+            setIfDefined("bio", data.bio);
         } else {
-            updateData.jobTitle = data.jobTitle;
-            updateData.skills = data.skills;
-            updateData.linkedIn = data.linkedIn;
-            updateData.preferredRole = data.preferredRole;
-            updateData.preferredLocation = data.preferredLocation;
-            updateData.resumeUrl = data.resumeUrl;
+            setIfDefined("jobTitle", data.jobTitle);
+            if (data.skills !== undefined) {
+                setIfDefined(
+                    "skills",
+                    Array.isArray(data.skills)
+                        ? data.skills
+                        : String(data.skills)
+                            .split(",")
+                            .map((skill: string) => skill.trim())
+                            .filter(Boolean)
+                );
+            }
+            setIfDefined("linkedIn", data.linkedIn);
+            setIfDefined("preferredRole", data.preferredRole);
+            setIfDefined("preferredLocation", data.preferredLocation);
+            setIfDefined("resumeUrl", data.resumeUrl);
         }
 
-        await User.findByIdAndUpdate(session.user.id, updateData);
+        if (Object.keys(updateData).length > 0) {
+            await User.findByIdAndUpdate(session.user.id, updateData);
+        }
 
         return NextResponse.json(
             { message: "Onboarding completed successfully" },

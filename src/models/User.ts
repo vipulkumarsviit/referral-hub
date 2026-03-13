@@ -8,6 +8,12 @@ export interface IUser extends mongoose.Document {
     password?: string;
     role: UserRole;
     image?: string;
+    workEmail?: string;
+    workEmailVerified: boolean;
+    workEmailVerifyToken?: string;
+    workEmailVerifyExpires?: Date;
+    emailVerifyToken?: string;
+    emailVerifyExpires?: Date;
     company?: string;
     jobTitle?: string;
     bio?: string;
@@ -47,6 +53,31 @@ const UserSchema = new mongoose.Schema<IUser>(
         },
         image: {
             type: String,
+        },
+        workEmail: {
+            type: String,
+            lowercase: true,
+            trim: true,
+        },
+        workEmailVerified: {
+            type: Boolean,
+            default: false,
+        },
+        workEmailVerifyToken: {
+            type: String,
+            select: false,
+        },
+        workEmailVerifyExpires: {
+            type: Date,
+            select: false,
+        },
+        emailVerifyToken: {
+            type: String,
+            select: false,
+        },
+        emailVerifyExpires: {
+            type: Date,
+            select: false,
         },
         company: {
             type: String,

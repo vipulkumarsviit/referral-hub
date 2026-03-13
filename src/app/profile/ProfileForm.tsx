@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 type UserRole = "seeker" | "referrer" | "admin";
 
@@ -15,6 +16,8 @@ type ProfileUser = {
   name?: string;
   email?: string;
   role: UserRole;
+  workEmail?: string;
+  workEmailVerified?: boolean;
   jobTitle?: string;
   company?: string;
   bio?: string;
@@ -46,6 +49,10 @@ export default function ProfileForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [verificationStatus, setVerificationStatus] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [workEmailInput, setWorkEmailInput] = useState("");
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     async function fetchProfile() {
@@ -54,6 +61,7 @@ export default function ProfileForm() {
         if (res.ok) {
           const data = (await res.json()) as { user: ProfileUser };
           setUser(data.user);
+          setWorkEmailInput(data.user.workEmail || "");
         }
       } catch {
         setMessage("Failed to load profile.");
@@ -66,6 +74,20 @@ export default function ProfileForm() {
       fetchProfile();
     }
   }, [session]);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const verify = searchParams.get("verify");
+    if (verify === "work-email" && status) {
+      if (status === "success") {
+        setVerificationStatus("Work email verified successfully.");
+      } else if (status === "invalid") {
+        setVerificationStatus("Verification link is invalid or expired.");
+      } else if (status === "error") {
+        setVerificationStatus("We couldn't verify your work email. Please try again.");
+      }
+    }
+  }, [searchParams]);
 
   const role = user?.role;
   const isSeeker = role === "seeker";
@@ -86,13 +108,11 @@ export default function ProfileForm() {
       name: trimOrEmpty(formData.get("name")),
       jobTitle: trimOrEmpty(formData.get("jobTitle")),
       bio: trimOrEmpty(formData.get("bio")),
+      company: trimOrEmpty(formData.get("company")),
+      workEmail: trimOrEmpty(formData.get("workEmail")),
     };
 
-    if (isReferrer) {
-      payload.company = trimOrEmpty(formData.get("company"));
-    }
-
-    if (isSeeker) {
+    if (isSeeker || isReferrer) {
       const resumeUrl = trimOrEmpty(formData.get("resumeUrl"));
       const linkedIn = trimOrEmpty(formData.get("linkedIn"));
 
@@ -118,6 +138,7 @@ export default function ProfileForm() {
     if (isAdmin) {
       // Admin settings stay minimal by design.
       delete payload.company;
+      delete payload.workEmail;
       delete payload.resumeUrl;
       delete payload.linkedIn;
       delete payload.skills;
@@ -141,6 +162,7 @@ export default function ProfileForm() {
 
       const json = (await res.json()) as { user: ProfileUser };
       setUser(json.user);
+      setWorkEmailInput(json.user.workEmail || "");
 
       const changed: string[] = [];
       const pick = (v: unknown) => (typeof v === "string" ? v.trim() : v);
@@ -149,11 +171,11 @@ export default function ProfileForm() {
       if (pick(prev.jobTitle) !== pick(json.user.jobTitle)) changed.push("job title");
       if (pick(prev.bio) !== pick(json.user.bio)) changed.push("bio");
 
-      if (isReferrer && pick(prev.company) !== pick(json.user.company)) {
+      if (!isAdmin && pick(prev.company) !== pick(json.user.company)) {
         changed.push("company");
       }
 
-      if (isSeeker) {
+      if (!isAdmin) {
         if (pick(prev.resumeUrl) !== pick(json.user.resumeUrl)) changed.push("resume link");
         if (pick(prev.linkedIn) !== pick(json.user.linkedIn)) changed.push("LinkedIn");
         if ((prev.skills || []).join(",") !== (json.user.skills || []).join(",")) changed.push("skills");
@@ -167,6 +189,38 @@ export default function ProfileForm() {
       setMessage("An error occurred");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const workEmailBadge = user?.workEmailVerified ? (
+    <span className="inline-flex items-center gap-1 rounded-full bg-success-light px-2 py-1 text-xs font-bold text-success">
+      <CheckCircle className="h-3 w-3" />
+      Verified
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 rounded-full bg-brand-dark/5 px-2 py-1 text-xs font-bold text-brand-dark/60">
+      Not verified
+    </span>
+  );
+
+  const handleVerify = async () => {
+    setVerifying(true);
+    setVerificationStatus("");
+    try {
+      const res = await fetch("/api/user/work-email/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workEmail: workEmailInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Unable to send verification email.");
+      }
+      setVerificationStatus("Verification email sent. Check your inbox.");
+    } catch (err: any) {
+      setVerificationStatus(err.message || "Unable to send verification email.");
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -185,7 +239,7 @@ export default function ProfileForm() {
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-brand-dark">Profile Settings</h1>
         <p className="mt-2 text-brand-dark/60">
-          Manage your profile details based on your account role.
+          Manage your profile details and work email verification.
         </p>
       </div>
 
@@ -198,10 +252,10 @@ export default function ProfileForm() {
                   <h2 className="text-lg font-semibold text-brand-dark">Personal Info</h2>
                   <p className="text-sm text-brand-dark/60">Basic details used across your account.</p>
                 </div>
-                {user.isVerified && isReferrer && (
+                {user.isVerified && (
                   <span className="hidden items-center gap-1 rounded-full bg-success-light px-2 py-1 text-xs font-bold text-success sm:inline-flex">
                     <CheckCircle className="h-3 w-3" />
-                    Verified Employee
+                    Email verified
                   </span>
                 )}
               </div>
@@ -223,39 +277,7 @@ export default function ProfileForm() {
               </div>
             </section>
 
-            {(isSeeker || isReferrer || isAdmin) && <div className="h-px bg-brand-dark/5" />}
-
-            {isReferrer && (
-              <section className="space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-brand-dark">Company Profile</h2>
-                  <p className="text-sm text-brand-dark/60">Share your workplace and short intro.</p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Company</Label>
-                    <Input
-                      id="company"
-                      name="company"
-                      defaultValue={user.company}
-                      placeholder="e.g. Acme Inc"
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Short Bio</Label>
-                    <Input
-                      id="bio"
-                      name="bio"
-                      defaultValue={user.bio}
-                      placeholder="A short intro"
-                      className="h-11"
-                    />
-                  </div>
-                </div>
-              </section>
-            )}
+            {!isAdmin && <div className="h-px bg-brand-dark/5" />}
 
             {isAdmin && (
               <section className="space-y-4">
@@ -278,12 +300,72 @@ export default function ProfileForm() {
               </section>
             )}
 
-            {isSeeker && (
-              <>
-                <section className="space-y-6">
+            {!isAdmin && (
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <section className="space-y-6 rounded-2xl border border-brand-dark/5 bg-brand-bg/40 p-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-brand-dark">Experience</h2>
-                    <p className="text-sm text-brand-dark/60">Add your resume and LinkedIn profile.</p>
+                    <h2 className="text-lg font-semibold text-brand-dark">Referrer Profile</h2>
+                    <p className="text-sm text-brand-dark/60">Company details and verification.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company</Label>
+                      <Input
+                        id="company"
+                        name="company"
+                        defaultValue={user.company}
+                        placeholder="e.g. Acme Inc"
+                        className="h-11"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bio">Short Bio</Label>
+                      <Input
+                        id="bio"
+                        name="bio"
+                        defaultValue={user.bio}
+                        placeholder="A short intro"
+                        className="h-11"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <Label htmlFor="workEmail">Work Email</Label>
+                      {workEmailBadge}
+                    </div>
+                    <Input
+                      id="workEmail"
+                      name="workEmail"
+                      type="email"
+                      value={workEmailInput}
+                      onChange={(e) => setWorkEmailInput(e.target.value)}
+                      className="h-11"
+                      placeholder="name@company.com"
+                    />
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleVerify}
+                        disabled={verifying || !workEmailInput || user?.workEmailVerified}
+                      >
+                        {verifying ? "Sending..." : "Verify work email"}
+                      </Button>
+                      {verificationStatus && (
+                        <span className="text-xs text-brand-dark/60">{verificationStatus}</span>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+                <section className="space-y-6 rounded-2xl border border-brand-dark/5 bg-white p-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-brand-dark">Seeker Profile</h2>
+                    <p className="text-sm text-brand-dark/60">Resume, skills, and preferences.</p>
                   </div>
 
                   <div className="space-y-4">
@@ -309,15 +391,6 @@ export default function ProfileForm() {
                         className="h-11"
                       />
                     </div>
-                  </div>
-                </section>
-
-                <div className="h-px bg-brand-dark/5" />
-
-                <section className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-brand-dark">Preferences</h2>
-                    <p className="text-sm text-brand-dark/60">Skills and roles you’re interested in.</p>
                   </div>
 
                   <div className="space-y-3">
@@ -367,7 +440,7 @@ export default function ProfileForm() {
                     </div>
                   </div>
                 </section>
-              </>
+              </div>
             )}
 
             {message && (

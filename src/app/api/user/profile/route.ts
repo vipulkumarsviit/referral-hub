@@ -32,23 +32,19 @@ export async function PUT(req: Request) {
 
         const body = await req.json();
         await dbConnect();
-        const currentUser = await User.findById(session.user.id).select("role");
+        const currentUser = await User.findById(session.user.id).select("role workEmail");
         if (!currentUser) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
         const role = currentUser.role as "seeker" | "referrer" | "admin";
 
-        const commonFields = ["name", "jobTitle", "bio", "image"] as const;
+        const commonFields = ["name", "jobTitle", "bio", "image", "company", "workEmail"] as const;
         const seekerOnlyFields = ["linkedIn", "resumeUrl", "skills", "preferredRole", "preferredLocation"] as const;
-        const referrerOnlyFields = ["company"] as const;
 
         const allowedFields = new Set<string>([...commonFields]);
-        if (role === "seeker") {
+        if (role === "seeker" || role === "referrer") {
             seekerOnlyFields.forEach((f) => allowedFields.add(f));
-        }
-        if (role === "referrer") {
-            referrerOnlyFields.forEach((f) => allowedFields.add(f));
         }
 
         // Build a sanitized payload
@@ -74,10 +70,21 @@ export async function PUT(req: Request) {
         if (typeof data.linkedIn === "string") {
             data.linkedIn = data.linkedIn.trim();
         }
+        if (typeof data.workEmail === "string") {
+            data.workEmail = data.workEmail.trim().toLowerCase();
+        }
 
         // Ensure user is not tampering with their role or isVerified status
         delete data.role;
         delete data.isVerified;
+
+        if (
+            typeof data.workEmail === "string" &&
+            data.workEmail &&
+            data.workEmail !== currentUser.workEmail
+        ) {
+            data.workEmailVerified = false;
+        }
         const updatedUser = await User.findByIdAndUpdate(
             session.user.id,
             { $set: data },

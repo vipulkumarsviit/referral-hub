@@ -7,8 +7,11 @@ import { auth } from "@/auth";
 export async function GET(req: Request) {
     try {
         const session = await auth();
-        if (!session || !session.user || (session.user as any).role !== "seeker") {
+        if (!session || !session.user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
+        if ((session.user as any).role === "admin") {
+            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
         }
 
         await dbConnect();

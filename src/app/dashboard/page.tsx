@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import ReferrerDashboard from "./ReferrerDashboard";
-import SeekerDashboard from "./SeekerDashboard";
+import CombinedDashboard from "./CombinedDashboard";
 
 export default async function DashboardRoot() {
     const session = await auth();
@@ -16,9 +15,5 @@ export default async function DashboardRoot() {
         redirect("/dashboard/admin");
     }
 
-    if (role === "referrer") {
-        return <ReferrerDashboard userId={session.user.id!} />;
-    }
-
-    return <SeekerDashboard userId={session.user.id!} />;
+    return <CombinedDashboard />;
 }

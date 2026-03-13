@@ -13,8 +13,8 @@ export default async function MyListingsPage() {
         redirect("/login");
     }
     const role = (session.user as unknown as { role?: string })?.role;
-    if (role !== "referrer") {
-        redirect("/dashboard");
+    if (role === "admin") {
+        redirect("/dashboard/admin");
     }
 
     const baseUrl =

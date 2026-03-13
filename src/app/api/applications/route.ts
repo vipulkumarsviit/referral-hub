@@ -12,8 +12,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        if ((session.user as any).role !== "seeker") {
-            return NextResponse.json({ message: "Only job seekers can apply for referrals" }, { status: 403 });
+        if ((session.user as any).role === "admin") {
+            return NextResponse.json({ message: "Admins cannot apply for referrals" }, { status: 403 });
         }
 
         const data = await req.json();
@@ -36,6 +36,10 @@ export async function POST(req: Request) {
         const job = await JobListing.findById(jobId);
         if (!job || job.status !== "active") {
             return NextResponse.json({ message: "Job listing is no longer active" }, { status: 404 });
+        }
+
+        if (String(job.referrerId) === String(userId)) {
+            return NextResponse.json({ message: "You cannot apply to your own referral listing." }, { status: 403 });
         }
 
         // Check if already applied

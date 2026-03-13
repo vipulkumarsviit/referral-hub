@@ -54,8 +54,8 @@ const navItems: {
     { icon: Home, label: "Home", href: "/dashboard/admin", roles: ["admin"] },
     { icon: Flag, label: "Feedback", href: "/dashboard/admin/feedback", roles: ["admin"] },
     { icon: Home, label: "Home", href: "/dashboard", roles: ["seeker", "referrer"] },
-    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer"] },
-    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer"] },
+    { icon: List, label: "My Listings", href: "/dashboard/listings", roles: ["referrer", "seeker"] },
+    { icon: Users, label: "Applicants", href: "/dashboard/applicants", roles: ["referrer", "seeker"] },
     { icon: MessageSquare, label: "Messages", href: "/dashboard/messages", roles: ["seeker", "referrer"] },
     { icon: Settings, label: "Settings", href: "/dashboard/settings", roles: ["seeker", "referrer", "admin"] },
   ];

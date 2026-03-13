@@ -45,8 +45,9 @@ export default function NewListingPage() {
         }
     };
 
-    if ((session?.user as any)?.role !== "referrer") {
-        return <div className="py-12 text-center text-brand-dark/60">Only referrers can access this page.</div>;
+    const isAdmin = (session?.user as any)?.role === "admin";
+    if (isAdmin) {
+        return <div className="py-12 text-center text-brand-dark/60">Admins cannot create listings.</div>;
     }
 
     return (
@@ -118,6 +119,20 @@ export default function NewListingPage() {
                         {error && (
                             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500">
                                 {error}
+                                {error.includes("verify your work email") && (
+                                    <div className="mt-3 rounded-lg border border-red-200 bg-white p-3 text-xs text-brand-dark/70">
+                                        <p className="font-semibold text-brand-dark">Verification required</p>
+                                        <p className="mt-1">
+                                            Add and verify your work email to post more than 5 referrals.
+                                        </p>
+                                        <Link
+                                            href="/dashboard/settings?verify=work-email"
+                                            className="mt-2 inline-flex text-primary font-bold hover:underline"
+                                        >
+                                            Verify work email
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         )}
 

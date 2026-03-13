@@ -125,3 +125,59 @@ export function resetPasswordEmail({
     text: `Reset your password: ${resetUrl}`,
   };
 }
+
+export function workEmailVerificationEmail({
+  verifyUrl,
+  logoUrl,
+}: {
+  verifyUrl: string;
+  logoUrl: string;
+}) {
+  const body = `
+    <h2 style="margin:0 0 8px;font-size:22px;">Verify your work email</h2>
+    <p style="margin:0 0 16px;color:rgba(26,26,46,0.7);line-height:1.6;">
+      Confirm your work email to unlock posting more than 5 referrals. This link expires in 24 hours.
+    </p>
+    <a href="${verifyUrl}" style="display:inline-block;background:${brand.primary};color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border-radius:12px;">Verify work email</a>
+    <p style="margin:16px 0 0;color:rgba(26,26,46,0.6);font-size:12px;">If you didn’t request this, you can safely ignore this email.</p>
+  `;
+
+  return {
+    subject: "Verify your work email for ReferralHub",
+    html: layout({
+      title: "Verify your work email",
+      preview: "Verify your work email to unlock more referrals.",
+      body,
+      logoUrl,
+    }),
+    text: `Verify your work email: ${verifyUrl}`,
+  };
+}
+
+export function accountEmailVerificationEmail({
+  verifyUrl,
+  logoUrl,
+}: {
+  verifyUrl: string;
+  logoUrl: string;
+}) {
+  const body = `
+    <h2 style="margin:0 0 8px;font-size:22px;">Verify your email</h2>
+    <p style="margin:0 0 16px;color:rgba(26,26,46,0.7);line-height:1.6;">
+      Confirm your email to secure your ReferralHub account. This link expires in 24 hours.
+    </p>
+    <a href="${verifyUrl}" style="display:inline-block;background:${brand.primary};color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border-radius:12px;">Verify email</a>
+    <p style="margin:16px 0 0;color:rgba(26,26,46,0.6);font-size:12px;">If you didn’t request this, you can safely ignore this email.</p>
+  `;
+
+  return {
+    subject: "Verify your ReferralHub email",
+    html: layout({
+      title: "Verify your email",
+      preview: "Verify your email to secure your account.",
+      body,
+      logoUrl,
+    }),
+    text: `Verify your email: ${verifyUrl}`,
+  };
+}

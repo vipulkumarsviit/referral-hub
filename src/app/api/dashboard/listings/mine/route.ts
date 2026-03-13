@@ -13,11 +13,6 @@ export async function GET() {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const role = (session.user as unknown as { role?: string })?.role;
-        if (role !== "referrer") {
-            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-        }
-
         await dbConnect();
 
         const listings = await JobListing.find({ referrerId: session.user.id })
@@ -41,4 +36,3 @@ export async function GET() {
         return NextResponse.json({ message: "Server error" }, { status: 500 });
     }
 }
-
