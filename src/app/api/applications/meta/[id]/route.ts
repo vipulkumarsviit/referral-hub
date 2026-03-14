@@ -23,11 +23,10 @@ export async function GET(
             return NextResponse.json({ message: "Application not found" }, { status: 404 });
         }
 
-        const isParticipant =
-            application.jobSeekerId.toString() === session.user.id ||
-            application.referrerId.toString() === session.user.id;
-
-        if (!isParticipant) {
+        const isReferrer = application.referrerId.toString() === session.user.id;
+        const isSeeker = application.jobSeekerId.toString() === session.user.id;
+        
+        if (!isReferrer && !isSeeker) {
             return NextResponse.json({ message: "Forbidden" }, { status: 403 });
         }
 
@@ -37,6 +36,7 @@ export async function GET(
         }
 
         const referrer = await User.findById(application.referrerId).lean();
+        const seeker = await User.findById(application.jobSeekerId).lean();
 
         return NextResponse.json(
             {
@@ -44,6 +44,9 @@ export async function GET(
                 company: job.company,
                 referrerName: referrer?.name ?? null,
                 referrerPosition: referrer?.jobTitle ?? null,
+                seekerName: seeker?.name ?? null,
+                seekerPosition: seeker?.jobTitle ?? null,
+                role: isReferrer ? "referrer" : "seeker",
             },
             { status: 200 }
         );
@@ -52,4 +55,3 @@ export async function GET(
         return NextResponse.json({ message: "Server error" }, { status: 500 });
     }
 }
-

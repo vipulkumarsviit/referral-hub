@@ -1,4 +1,4 @@
-import ConversationsSplit from "./ConversationsSplit";
+import MessagesLayout from "./MessagesLayout";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -30,17 +30,14 @@ export default async function MessagesIndex() {
         throw new Error("Failed to load conversations");
     }
 
-    const { items } = await res.json();
+    const { seekerApplications, referrerJobs } = await res.json();
 
     return (
-        <div>
-            <div className="mb-6">
-                <h1 className="text-3xl font-extrabold text-brand-dark">Messages</h1>
-                <p className="mt-2 text-brand-dark/60">
-                    Your conversations with applicants and referrers.
-                </p>
-            </div>
-            <ConversationsSplit items={items} />
+        <div className="h-[calc(100vh-80px)] mt-[-24px] mx-[-24px]">
+            <MessagesLayout 
+                seekerApplications={seekerApplications || []} 
+                referrerJobs={referrerJobs || []} 
+            />
         </div>
     );
 }

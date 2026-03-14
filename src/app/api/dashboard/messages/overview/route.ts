@@ -32,6 +32,12 @@ export async function GET() {
         const users = await User.find({ _id: { $in: otherUserIds } }).lean();
         const userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
 
+        // Fetch Job Listings for contexts
+        const jobIds = apps.map((a) => a.jobId);
+        const { JobListing } = await import("@/models/JobListing"); // Dynamic import to avoid circular dep if any, or just import at top. Actually let's use the model directly.
+        const jobs = await JobListing.find({ _id: { $in: jobIds } }).lean();
+        const jobMap = new Map(jobs.map((j: any) => [j._id.toString(), j]));
+
         const lastMessages = await Promise.all(
             apps.map(async (a: any) => {
                 const m = await Message.findOne({ applicationId: a._id })
@@ -42,11 +48,12 @@ export async function GET() {
         );
         const lastMap = new Map(lastMessages);
 
-        const items = apps.map((a: any) => {
-            const isReferrer = a.referrerId.toString() === session.user!.id;
-            const other = isReferrer
-                ? (userMap.get(a.jobSeekerId.toString()) as any)
-                : (userMap.get(a.referrerId.toString()) as any);
+        const mappedApps = apps.map((a: any) => {
+            const isSeeker = a.jobSeekerId.toString() === session.user!.id;
+            const other = isSeeker
+                ? (userMap.get(a.referrerId.toString()) as any)
+                : (userMap.get(a.jobSeekerId.toString()) as any);
+            const job = jobMap.get(a.jobId.toString()) as any;
             const last = lastMap.get(a._id.toString()) as any;
             const preview = last?.content?.slice(0, 60) || "Accepted application";
             const initials =
@@ -56,15 +63,44 @@ export async function GET() {
                     .slice(0, 2)
                     .map((p: string) => p[0]?.toUpperCase())
                     .join("") || "?";
+            
             return {
                 appId: a._id.toString(),
+                jobId: a.jobId.toString(),
                 name: other?.name || "Unknown",
+                position: job?.title || "Application",
+                company: job?.company || "Company",
                 initials,
                 preview,
+                status: a.status || "Pending",
+                createdAt: a.createdAt,
+                isSeeker, // whether current user is the seeker for this app
+                updatedAt: a.updatedAt,
             };
         });
 
-        return NextResponse.json({ items }, { status: 200 });
+        const seekerApplications = mappedApps.filter((ma) => ma.isSeeker);
+        const referrerApps = mappedApps.filter((ma) => !ma.isSeeker);
+
+        const jobGroups = new Map();
+        for (const rap of referrerApps) {
+            if (!jobGroups.has(rap.jobId)) {
+                jobGroups.set(rap.jobId, {
+                    jobId: rap.jobId,
+                    position: rap.position,
+                    company: rap.company,
+                    updatedAt: rap.updatedAt,
+                    applicants: [],
+                });
+            }
+            jobGroups.get(rap.jobId).applicants.push(rap);
+        }
+
+        const referrerJobs = Array.from(jobGroups.values()).sort(
+            (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+
+        return NextResponse.json({ seekerApplications, referrerJobs }, { status: 200 });
     } catch (error) {
         console.error("Messages overview error:", error);
         return NextResponse.json({ message: "Server error" }, { status: 500 });
