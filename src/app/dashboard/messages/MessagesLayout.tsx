@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import MessagesApp from "@/app/messages/[id]/MessagesApp";
 import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 export type BaseApp = {
   appId: string;
@@ -36,24 +37,81 @@ export default function MessagesLayout({
   seekerApplications: BaseApp[];
   referrerJobs: RefJob[];
 }) {
-  const [view, setView] = useState<"referrer" | "seeker">("referrer");
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const urlView = searchParams.get("view");
+  const initialView = urlView === "seeker" || urlView === "referrer" ? urlView : "referrer";
+
+  const [view, setView] = useState<"referrer" | "seeker">(initialView);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(
+    initialView === "referrer" ? searchParams.get("jobApplicationId") : null
+  );
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(
+    initialView === "referrer" 
+      ? searchParams.get("userId") 
+      : searchParams.get("jobApplicationId")
+  );
   const [seekerQuery, setSeekerQuery] = useState("");
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", view);
+
+    if (view === "referrer") {
+      if (selectedJobId) params.set("jobApplicationId", selectedJobId);
+      else params.delete("jobApplicationId");
+
+      if (selectedAppId) params.set("userId", selectedAppId);
+      else params.delete("userId");
+    } else {
+      params.delete("userId");
+      if (selectedAppId) params.set("jobApplicationId", selectedAppId);
+      else params.delete("jobApplicationId");
+    }
+    
+    // Replace URL without full reloads only when string actively mutates
+    const currentQueryString = searchParams.toString();
+    const newQueryString = params.toString();
+    if (currentQueryString !== newQueryString) {
+      router.replace(`${pathname}?${newQueryString}`, { scroll: false });
+    }
+  }, [view, selectedJobId, selectedAppId, pathname, router, searchParams]);
 
   // Initialize selections when view or data changes
   useEffect(() => {
     if (view === "referrer") {
-      if (referrerJobs.length > 0 && !selectedJobId) {
-        const firstJob = referrerJobs[0];
-        setSelectedJobId(firstJob.jobId);
-        if (firstJob.applicants.length > 0) {
-          setSelectedAppId(firstJob.applicants[0].appId);
+      if (referrerJobs.length > 0) {
+        let job = referrerJobs.find((j) => j.jobId === selectedJobId);
+        let app = null;
+        
+        if (!job) {
+          job = referrerJobs[0];
+          setSelectedJobId(job.jobId);
+        } else {
+          app = job.applicants.find((a) => a.appId === selectedAppId);
         }
+        
+        if (!app && job.applicants.length > 0) {
+          setSelectedAppId(job.applicants[0].appId);
+        } else if (!app && job.applicants.length === 0 && selectedAppId !== null) {
+          setSelectedAppId(null);
+        }
+      } else {
+        if (selectedJobId) setSelectedJobId(null);
+        if (selectedAppId) setSelectedAppId(null);
       }
     } else {
-      if (seekerApplications.length > 0 && !selectedAppId) {
-        setSelectedAppId(seekerApplications[0].appId);
+      if (seekerApplications.length > 0) {
+        let app = seekerApplications.find((a) => a.appId === selectedAppId);
+        if (!app) {
+          app = seekerApplications[0];
+          setSelectedAppId(app.appId);
+        }
+      } else {
+        if (selectedAppId) setSelectedAppId(null);
       }
     }
   }, [view, referrerJobs, seekerApplications, selectedJobId, selectedAppId]);

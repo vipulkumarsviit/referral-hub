@@ -116,11 +116,11 @@ export default function MessagesApp({
     }
 
     const currentUserId = session?.user?.id;
-    
+
     // Determine the "other person" in the conversation
     const otherPersonName = appDetails?.role === "referrer" ? appDetails?.seekerName : appDetails?.referrerName;
     const otherPersonRole = appDetails?.role === "referrer" ? "Job Seeker" : "Referrer";
-    
+
     // Calculate initials for the avatar if they aren't provided by the `meta` prop
     const calculatedInitials = String(otherPersonName || "?")
         .split(" ")
@@ -132,14 +132,14 @@ export default function MessagesApp({
     const effectiveMeta =
         meta || appDetails
             ? {
-                  ...(meta || {}),
-                  ...(appDetails && {
-                      company: appDetails.company,
-                      position: appDetails.position,
-                      initials: calculatedInitials,
-                      name: otherPersonName || "User",
-                  }),
-              }
+                ...(meta || {}),
+                ...(appDetails && {
+                    company: appDetails.company,
+                    position: appDetails.position,
+                    initials: calculatedInitials,
+                    name: otherPersonName || "User",
+                }),
+            }
             : undefined;
 
     const isCurrentUserSeeker = meta ? meta.isSeeker : appDetails?.role === "seeker";
@@ -147,7 +147,7 @@ export default function MessagesApp({
     const threadCard = (
         <div className="flex-1 flex flex-col h-full bg-white relative">
             {/* Header */}
-            { effectiveMeta && (
+            {effectiveMeta && (
                 <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white z-10 shadow-sm shrink-0">
                     <div className="flex items-center gap-4 min-w-0">
                         <Avatar className="h-12 w-12 border border-slate-100 shadow-sm">
@@ -172,16 +172,16 @@ export default function MessagesApp({
                                 ) : (
                                     <>
                                         <span className="relative flex h-2 w-2">
-                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                         </span>
-                                        <span>Applying for {effectiveMeta.position} @ {effectiveMeta.company}</span>
+                                        <span>{effectiveMeta.position} @ {effectiveMeta.company}</span>
                                     </>
                                 )}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                         {isCurrentUserSeeker ? (
                             <>
@@ -228,11 +228,10 @@ export default function MessagesApp({
                         const isMe = m.senderId.toString() === currentUserId;
                         return (
                             <div key={m._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
-                                <div className={`relative max-w-[75%] px-5 py-3 text-[15px] leading-relaxed shadow-sm ${
-                                    isMe 
-                                    ? "bg-[#506ef7] text-white rounded-2xl rounded-tr-sm" 
-                                    : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm"
-                                }`}>
+                                <div className={`relative max-w-[75%] px-5 py-3 text-[15px] leading-relaxed shadow-sm ${isMe
+                                        ? "bg-[#506ef7] text-white rounded-2xl rounded-tr-sm"
+                                        : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm"
+                                    }`}>
                                     {m.content}
                                 </div>
                             </div>
